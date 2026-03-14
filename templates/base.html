@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}ThreadCraft — Premium Custom Prints{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/static/css/main.css"/>
+  {% block head %}{% endblock %}
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">THREAD<span>CRAFT</span></a>
+    <ul class="nav-links">
+      <li><a href="/shop" class="{% if page == 'shop' %}active{% endif %}">Shop</a></li>
+      <li><a href="/shop?category=T-Shirts">T-Shirts</a></li>
+      <li><a href="/shop?category=Hoodies">Hoodies</a></li>
+      <li><a href="/shop?category=Shirts">Shirts</a></li>
+    </ul>
+    <div class="nav-actions">
+      <button class="nav-search-btn" onclick="toggleSearch()" title="Search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+      <button class="nav-search-btn" id="wishlist-btn" onclick="toggleWishlist()" title="Wishlist">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      </button>
+      <a href="/cart" class="cart-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        <span class="cart-count" id="cart-count">{{ cart_count }}</span>
+      </a>
+      <button class="nav-toggle" id="nav-toggle" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+  <div class="nav-search-bar" id="nav-search-bar">
+    <form action="/search" method="get" class="search-form-inner">
+      <input type="text" name="q" placeholder="Search products, styles, colors..." autofocus/>
+      <button type="submit" class="btn btn-primary btn-sm">Search</button>
+    </form>
+  </div>
+  <div class="nav-mobile" id="nav-mobile">
+    <a href="/shop">All Products</a>
+    <a href="/shop?category=T-Shirts">T-Shirts</a>
+    <a href="/shop?category=Hoodies">Hoodies</a>
+    <a href="/shop?category=Shirts">Shirts</a>
+    <a href="/cart">Cart ({{ cart_count }})</a>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">THREAD<span>CRAFT</span></div>
+      <p>Premium custom-printed apparel, made with love and precision in India.</p>
+    </div>
+    <div class="footer-links">
+      <h4>Shop</h4>
+      <a href="/shop?category=T-Shirts">T-Shirts</a>
+      <a href="/shop?category=Hoodies">Hoodies</a>
+      <a href="/shop?category=Shirts">Shirts</a>
+    </div>
+    <div class="footer-links">
+      <h4>Info</h4>
+      <a href="#">About Us</a>
+      <a href="#">Shipping Policy</a>
+      <a href="#">Returns</a>
+      <a href="#">Contact</a>
+    </div>
+    <div class="footer-links">
+      <h4>Follow Us</h4>
+      <a href="#">Instagram</a>
+      <a href="#">Pinterest</a>
+      <a href="#">Twitter</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2024 ThreadCraft. All rights reserved. Crafted with ♥ in India.</p>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script src="/static/js/main.js"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

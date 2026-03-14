@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin — ThreadCraft</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:#0a0a0f; --bg2:#12121a; --bg3:#1a1a2e;
+      --accent:#e94560; --accent2:#f5a623; --success:#4caf50;
+      --text:#f0f0f0; --text2:#a0a0b0;
+      --border:rgba(233,69,96,0.2);
+      --card:#14141f;
+      --font-display:'Playfair Display',serif;
+      --font-body:'DM Sans',sans-serif;
+      --font-mono:'Space Mono',monospace;
+      --sidebar:240px;
+      --radius:12px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:var(--font-body);display:flex;min-height:100vh}
+    a{color:inherit;text-decoration:none}
+    button{cursor:pointer;font-family:var(--font-body)}
+
+    /* SIDEBAR */
+    .sidebar{
+      width:var(--sidebar);flex-shrink:0;
+      background:var(--bg2);border-right:1px solid var(--border);
+      display:flex;flex-direction:column;
+      position:fixed;top:0;bottom:0;left:0;z-index:10;
+    }
+    .sidebar-logo{
+      padding:1.5rem;
+      font-family:var(--font-mono);font-size:0.9rem;letter-spacing:3px;
+      border-bottom:1px solid var(--border);
+    }
+    .sidebar-logo span{color:var(--accent)}
+    .sidebar-nav{flex:1;padding:1rem 0;overflow-y:auto}
+    .nav-section-label{
+      font-family:var(--font-mono);font-size:0.6rem;letter-spacing:3px;
+      text-transform:uppercase;color:var(--text2);
+      padding:0.75rem 1.25rem 0.25rem;
+    }
+    .sidebar-link{
+      display:flex;align-items:center;gap:0.75rem;
+      padding:0.7rem 1.25rem;font-size:0.875rem;color:var(--text2);
+      transition:all 0.2s;border-left:3px solid transparent;
+    }
+    .sidebar-link:hover{color:var(--text);background:rgba(255,255,255,0.03)}
+    .sidebar-link.active{color:var(--accent);background:rgba(233,69,96,0.08);border-left-color:var(--accent)}
+    .sidebar-icon{font-size:1rem;width:20px;text-align:center}
+    .sidebar-footer{
+      padding:1.25rem;border-top:1px solid var(--border);
+      font-size:0.75rem;color:var(--text2);
+    }
+    .sidebar-footer a{color:var(--accent)}
+
+    /* MAIN */
+    .admin-main{
+      margin-left:var(--sidebar);flex:1;
+      display:flex;flex-direction:column;min-height:100vh;
+    }
+    .topbar{
+      background:var(--bg2);border-bottom:1px solid var(--border);
+      padding:1rem 2rem;
+      display:flex;align-items:center;justify-content:space-between;
+      position:sticky;top:0;z-index:5;
+    }
+    .topbar-title{font-family:var(--font-display);font-size:1.4rem}
+    .topbar-right{display:flex;align-items:center;gap:1rem}
+    .topbar-badge{
+      background:rgba(233,69,96,0.15);color:var(--accent);
+      border:1px solid rgba(233,69,96,0.3);
+      padding:0.25rem 0.75rem;border-radius:20px;
+      font-size:0.75rem;font-family:var(--font-mono);
+    }
+    .btn{
+      display:inline-flex;align-items:center;gap:0.5rem;
+      padding:0.6rem 1.25rem;font-size:0.8rem;font-weight:500;
+      letter-spacing:1px;text-transform:uppercase;border-radius:8px;
+      border:none;cursor:pointer;transition:all 0.2s;
+    }
+    .btn-primary{background:var(--accent);color:white}
+    .btn-primary:hover{background:#c73652}
+    .btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
+    .btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+    .btn-sm{padding:0.4rem 0.85rem;font-size:0.72rem}
+    .btn-danger{background:rgba(233,69,96,0.15);color:var(--accent);border:1px solid rgba(233,69,96,0.3)}
+    .btn-danger:hover{background:var(--accent);color:white}
+    .btn-success{background:rgba(76,175,80,0.15);color:var(--success);border:1px solid rgba(76,175,80,0.3)}
+
+    /* CONTENT */
+    .admin-content{padding:2rem;flex:1}
+
+    /* STATS */
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;margin-bottom:2rem}
+    .stat-card{
+      background:var(--card);border-radius:var(--radius);
+      border:1px solid var(--border);padding:1.5rem;
+      position:relative;overflow:hidden;
+    }
+    .stat-card::before{
+      content:'';position:absolute;inset:0;
+      background:linear-gradient(135deg,rgba(233,69,96,0.05) 0%,transparent 60%);
+      pointer-events:none;
+    }
+    .stat-label{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:3px;text-transform:uppercase;color:var(--text2);margin-bottom:0.75rem}
+    .stat-value{font-family:var(--font-display);font-size:2.2rem;font-weight:700;margin-bottom:0.25rem}
+    .stat-value.accent{color:var(--accent)}
+    .stat-value.success{color:var(--success)}
+    .stat-value.gold{color:var(--accent2)}
+    .stat-delta{font-size:0.78rem;color:var(--text2)}
+    .stat-delta .up{color:var(--success)}
+    .stat-delta .down{color:var(--accent)}
+    .stat-icon{position:absolute;top:1.25rem;right:1.25rem;font-size:1.6rem;opacity:0.4}
+
+    /* PANELS */
+    .panel{background:var(--card);border-radius:var(--radius);border:1px solid var(--border);margin-bottom:1.5rem}
+    .panel-header{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);
+    }
+    .panel-title{font-family:var(--font-display);font-size:1.1rem}
+    .panel-body{padding:1.5rem}
+
+    /* TABLE */
+    .data-table{width:100%;border-collapse:collapse}
+    .data-table th{
+      text-align:left;padding:0.6rem 1rem;
+      font-family:var(--font-mono);font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;
+      color:var(--text2);border-bottom:1px solid var(--border);
+    }
+    .data-table td{
+      padding:0.85rem 1rem;font-size:0.875rem;
+      border-bottom:1px solid rgba(233,69,96,0.07);
+      vertical-align:middle;
+    }
+    .data-table tr:last-child td{border-bottom:none}
+    .data-table tr:hover td{background:rgba(255,255,255,0.02)}
+    .badge{
+      display:inline-block;padding:0.2rem 0.65rem;border-radius:20px;
+      font-size:0.7rem;font-family:var(--font-mono);letter-spacing:1px;
+    }
+    .badge-confirmed{background:rgba(76,175,80,0.15);color:var(--success);border:1px solid rgba(76,175,80,0.3)}
+    .badge-pending{background:rgba(245,166,35,0.15);color:var(--accent2);border:1px solid rgba(245,166,35,0.3)}
+    .badge-shipped{background:rgba(33,150,243,0.15);color:#64b5f6;border:1px solid rgba(33,150,243,0.3)}
+    .badge-new{background:rgba(233,69,96,0.15);color:var(--accent);border:1px solid var(--border)}
+    .badge-bestseller{background:rgba(245,166,35,0.15);color:var(--accent2);border:1px solid rgba(245,166,35,0.3)}
+
+    /* FORM */
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    .form-group{display:flex;flex-direction:column;gap:0.4rem}
+    .form-group label{font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--text2)}
+    .form-group input,.form-group select,.form-group textarea{
+      background:var(--bg);border:1px solid var(--border);border-radius:8px;
+      color:var(--text);padding:0.65rem 0.9rem;font-size:0.875rem;
+      font-family:var(--font-body);transition:border-color 0.2s;
+    }
+    .form-group input:focus,.form-group select:focus,.form-group textarea:focus{
+      outline:none;border-color:var(--accent);
+    }
+    .form-group textarea{resize:vertical;min-height:80px}
+    .form-full{grid-column:1/-1}
+
+    /* CHARTS */
+    .charts-grid{display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;margin-bottom:1.5rem}
+    .chart-wrap{position:relative;height:220px}
+    canvas{max-width:100%!important}
+
+    /* TABS */
+    .tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:1.5rem}
+    .tab{
+      padding:0.75rem 1.5rem;font-size:0.8rem;font-family:var(--font-mono);
+      letter-spacing:1px;text-transform:uppercase;color:var(--text2);
+      cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;
+      transition:all 0.2s;
+    }
+    .tab:hover{color:var(--text)}
+    .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+    /* TOAST */
+    .toast{
+      position:fixed;bottom:1.5rem;right:1.5rem;z-index:100;
+      background:var(--bg3);color:var(--text);
+      padding:0.85rem 1.25rem;border-radius:var(--radius);
+      border:1px solid var(--border);font-size:0.875rem;
+      transform:translateY(80px);opacity:0;transition:all 0.3s;
+      box-shadow:0 8px 24px rgba(0,0,0,0.4);
+    }
+    .toast.show{transform:translateY(0);opacity:1}
+
+    /* MODAL */
+    .modal-overlay{
+      display:none;position:fixed;inset:0;z-index:50;
+      background:rgba(0,0,0,0.75);backdrop-filter:blur(8px);
+      align-items:center;justify-content:center;padding:1rem;
+    }
+    .modal-overlay.open{display:flex}
+    .modal{
+      background:var(--card);border-radius:var(--radius);
+      border:1px solid var(--border);padding:2rem;
+      width:100%;max-width:560px;max-height:90vh;overflow-y:auto;
+    }
+    .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem}
+    .modal-title{font-family:var(--font-display);font-size:1.3rem}
+    .modal-close{background:none;border:none;color:var(--text2);font-size:1.4rem;cursor:pointer}
+    .modal-footer{display:flex;gap:0.75rem;justify-content:flex-end;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border)}
+
+    /* SEARCH */
+    .search-bar{
+      display:flex;align-items:center;gap:0.5rem;
+      background:var(--bg);border:1px solid var(--border);
+      border-radius:8px;padding:0.5rem 0.9rem;
+      font-size:0.875rem;color:var(--text2);
+    }
+    .search-bar input{
+      background:none;border:none;color:var(--text);
+      font-family:var(--font-body);font-size:0.875rem;outline:none;
+      min-width:180px;
+    }
+    .search-bar input::placeholder{color:var(--text2)}
+
+    /* PRODUCT THUMB */
+    .product-thumb{display:flex;align-items:center;gap:0.85rem}
+    .product-thumb-img{
+      width:40px;height:40px;border-radius:6px;
+      background:var(--bg3);border:1px solid var(--border);
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;
+      font-size:1rem;
+    }
+    .product-thumb-info strong{display:block;font-size:0.875rem}
+    .product-thumb-info span{font-size:0.75rem;color:var(--text2)}
+
+    /* RESPONSIVE */
+    @media(max-width:900px){
+      .stats-grid{grid-template-columns:1fr 1fr}
+      .charts-grid{grid-template-columns:1fr}
+      .form-grid{grid-template-columns:1fr}
+    }
+    @media(max-width:640px){
+      .sidebar{width:56px}
+      .sidebar-logo,.sidebar-link span,.nav-section-label,.sidebar-footer{display:none}
+      .sidebar-link{justify-content:center;padding:0.75rem}
+      .admin-main{margin-left:56px}
+      .stats-grid{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">THREAD<span>CRAFT</span></div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Overview</div>
+    <a href="#" class="sidebar-link active" onclick="showTab('dashboard',this)">
+      <span class="sidebar-icon">📊</span><span>Dashboard</span>
+    </a>
+    <div class="nav-section-label">Catalog</div>
+    <a href="#" class="sidebar-link" onclick="showTab('products',this)">
+      <span class="sidebar-icon">👕</span><span>Products</span>
+    </a>
+    <a href="#" class="sidebar-link" onclick="showTab('add-product',this)">
+      <span class="sidebar-icon">➕</span><span>Add Product</span>
+    </a>
+    <div class="nav-section-label">Sales</div>
+    <a href="#" class="sidebar-link" onclick="showTab('orders',this)">
+      <span class="sidebar-icon">📦</span><span>Orders</span>
+    </a>
+    <a href="#" class="sidebar-link" onclick="showTab('customers',this)">
+      <span class="sidebar-icon">👥</span><span>Customers</span>
+    </a>
+    <div class="nav-section-label">Store</div>
+    <a href="/" class="sidebar-link" target="_blank">
+      <span class="sidebar-icon">🌐</span><span>View Store</span>
+    </a>
+    <a href="#" class="sidebar-link" onclick="showTab('settings',this)">
+      <span class="sidebar-icon">⚙️</span><span>Settings</span>
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <div>ThreadCraft v1.0</div>
+    <a href="/">← Back to Store</a>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="admin-main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">Dashboard</div>
+    <div class="topbar-right">
+      <div class="search-bar">
+        <span>🔍</span>
+        <input type="text" placeholder="Search orders, products..." oninput="globalSearch(this.value)"/>
+      </div>
+      <span class="topbar-badge">Admin</span>
+    </div>
+  </div>
+
+  <div class="admin-content">
+
+    <!-- ========== DASHBOARD ========== -->
+    <div id="tab-dashboard">
+      <div class="stats-grid" id="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">💰</div>
+          <div class="stat-label">Total Revenue</div>
+          <div class="stat-value accent" id="stat-revenue">—</div>
+          <div class="stat-delta"><span class="up">↑ 12%</span> vs last month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📦</div>
+          <div class="stat-label">Total Orders</div>
+          <div class="stat-value" id="stat-orders">—</div>
+          <div class="stat-delta"><span class="up">↑ 8%</span> vs last month</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">👕</div>
+          <div class="stat-label">Products</div>
+          <div class="stat-value gold" id="stat-products">—</div>
+          <div class="stat-delta">Across 3 categories</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🛒</div>
+          <div class="stat-label">Avg Order Value</div>
+          <div class="stat-value success" id="stat-aov">—</div>
+          <div class="stat-delta"><span class="up">↑ 5%</span> vs last month</div>
+        </div>
+      </div>
+
+      <div class="charts-grid">
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Revenue (Last 7 Days)</span>
+            <span style="font-size:0.75rem;color:var(--text2);font-family:var(--font-mono)">₹ INR</span>
+          </div>
+          <div class="panel-body">
+            <div class="chart-wrap"><canvas id="revenue-chart"></canvas></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Sales by Category</span>
+          </div>
+          <div class="panel-body">
+            <div class="chart-wrap"><canvas id="category-chart"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Orders -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Recent Orders</span>
+          <button class="btn btn-ghost btn-sm" onclick="showTab('orders',null)">View All</button>
+        </div>
+        <div class="panel-body" style="padding:0">
+          <table class="data-table" id="recent-orders-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Items</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="recent-orders-body">
+              <tr><td colspan="7" style="text-align:center;color:var(--text2);padding:2rem">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== PRODUCTS ========== -->
+    <div id="tab-products" style="display:none">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">All Products</span>
+          <div style="display:flex;gap:0.75rem">
+            <select class="btn btn-ghost btn-sm" onchange="filterProductsByCategory(this.value)" style="cursor:pointer">
+              <option value="">All Categories</option>
+              <option value="T-Shirts">T-Shirts</option>
+              <option value="Shirts">Shirts</option>
+              <option value="Hoodies">Hoodies</option>
+            </select>
+            <button class="btn btn-primary btn-sm" onclick="showTab('add-product',null)">+ Add Product</button>
+          </div>
+        </div>
+        <div class="panel-body" style="padding:0">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Badge</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="products-table-body">
+              <tr><td colspan="6" style="text-align:center;color:var(--text2);padding:2rem">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== ADD PRODUCT ========== -->
+    <div id="tab-add-product" style="display:none">
+      <div class="panel" style="max-width:700px">
+        <div class="panel-header">
+          <span class="panel-title">Add New Product</span>
+        </div>
+        <div class="panel-body">
+          <div class="form-grid" id="add-product-form">
+            <div class="form-group form-full">
+              <label>Product Name *</label>
+              <input type="text" id="ap-name" placeholder="e.g. Geometric Sunrise Tee"/>
+            </div>
+            <div class="form-group form-full">
+              <label>Description *</label>
+              <textarea id="ap-desc" placeholder="Describe the product, fabric, print technique..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>Price (₹) *</label>
+              <input type="number" id="ap-price" placeholder="799"/>
+            </div>
+            <div class="form-group">
+              <label>Category *</label>
+              <select id="ap-category">
+                <option value="">Select category</option>
+                <option value="T-Shirts">T-Shirts</option>
+                <option value="Shirts">Shirts</option>
+                <option value="Hoodies">Hoodies</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Sizes (comma separated)</label>
+              <input type="text" id="ap-sizes" placeholder="XS, S, M, L, XL, XXL"/>
+            </div>
+            <div class="form-group">
+              <label>Colors (comma separated)</label>
+              <input type="text" id="ap-colors" placeholder="White, Black, Navy"/>
+            </div>
+            <div class="form-group">
+              <label>Stock</label>
+              <input type="number" id="ap-stock" placeholder="100"/>
+            </div>
+            <div class="form-group">
+              <label>Badge (optional)</label>
+              <input type="text" id="ap-badge" placeholder="New, Best Seller, Limited..."/>
+            </div>
+            <div class="form-group form-full">
+              <label>Image URL</label>
+              <input type="text" id="ap-image" placeholder="/static/images/tee1.svg"/>
+            </div>
+          </div>
+          <div style="display:flex;gap:0.75rem;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border)">
+            <button class="btn btn-primary" onclick="submitAddProduct()">Save Product</button>
+            <button class="btn btn-ghost" onclick="clearProductForm()">Clear</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== ORDERS ========== -->
+    <div id="tab-orders" style="display:none">
+      <div style="display:flex;gap:0.75rem;margin-bottom:1.25rem;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm order-filter active" onclick="filterOrders('all',this)">All</button>
+        <button class="btn btn-ghost btn-sm order-filter" onclick="filterOrders('confirmed',this)">Confirmed</button>
+        <button class="btn btn-ghost btn-sm order-filter" onclick="filterOrders('shipped',this)">Shipped</button>
+        <button class="btn btn-ghost btn-sm order-filter" onclick="filterOrders('pending',this)">Pending</button>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Orders</span>
+          <span style="font-size:0.8rem;color:var(--text2)" id="orders-count"></span>
+        </div>
+        <div class="panel-body" style="padding:0">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Email</th>
+                <th>Amount</th>
+                <th>Payment</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="orders-table-body">
+              <tr><td colspan="8" style="text-align:center;color:var(--text2);padding:2rem">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== CUSTOMERS ========== -->
+    <div id="tab-customers" style="display:none">
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">Customers</span></div>
+        <div class="panel-body" style="padding:0">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>City</th>
+                <th>Orders</th>
+                <th>Total Spent</th>
+              </tr>
+            </thead>
+            <tbody id="customers-table-body">
+              <tr><td colspan="6" style="text-align:center;color:var(--text2);padding:2rem">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== SETTINGS ========== -->
+    <div id="tab-settings" style="display:none">
+      <div class="panel" style="max-width:600px">
+        <div class="panel-header"><span class="panel-title">Store Settings</span></div>
+        <div class="panel-body">
+          <div class="form-grid">
+            <div class="form-group form-full">
+              <label>Store Name</label>
+              <input type="text" value="ThreadCraft"/>
+            </div>
+            <div class="form-group form-full">
+              <label>Store Tagline</label>
+              <input type="text" value="Art You Wear"/>
+            </div>
+            <div class="form-group">
+              <label>Contact Email</label>
+              <input type="email" value="hello@threadcraft.in"/>
+            </div>
+            <div class="form-group">
+              <label>Contact Phone</label>
+              <input type="tel" value="+91 98765 43210"/>
+            </div>
+            <div class="form-group">
+              <label>Free Shipping Threshold (₹)</label>
+              <input type="number" value="999"/>
+            </div>
+            <div class="form-group">
+              <label>Standard Shipping Rate (₹)</label>
+              <input type="number" value="99"/>
+            </div>
+            <div class="form-group form-full">
+              <label>GST Number</label>
+              <input type="text" placeholder="22AAAAA0000A1Z5"/>
+            </div>
+          </div>
+          <div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border)">
+            <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /admin-content -->
+</main>
+
+<!-- ORDER DETAIL MODAL -->
+<div class="modal-overlay" id="order-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Order Details</span>
+      <button class="modal-close" onclick="closeModal('order-modal')">✕</button>
+    </div>
+    <div id="order-modal-body">Loading...</div>
+    <div class="modal-footer">
+      <button class="btn btn-success btn-sm" onclick="updateOrderStatus('shipped')">Mark Shipped</button>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('order-modal')">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script>
+// ---- State ----
+let allProducts = [];
+let allOrders   = [];
+let currentOrderId = null;
+
+// ---- Tab navigation ----
+function showTab(name, linkEl) {
+  document.querySelectorAll('[id^="tab-"]').forEach(el => el.style.display = 'none');
+  document.getElementById(`tab-${name}`).style.display = '';
+  document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+  if (linkEl) linkEl.classList.add('active');
+  const titles = {
+    dashboard: 'Dashboard', products: 'Products', 'add-product': 'Add Product',
+    orders: 'Orders', customers: 'Customers', settings: 'Settings'
+  };
+  document.getElementById('topbar-title').textContent = titles[name] || name;
+  if (name === 'orders') loadOrders();
+  if (name === 'products') loadProductsTable();
+  if (name === 'customers') loadCustomers();
+}
+
+// ---- Toast ----
+let tt;
+function toast(msg, type='success') {
+  const el = document.getElementById('toast');
+  clearTimeout(tt);
+  el.textContent = msg;
+  el.className = `toast show`;
+  el.style.borderColor = type === 'error' ? 'var(--accent)' : 'var(--success)';
+  tt = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ---- Modal ----
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// ---- Load Dashboard ----
+async function loadDashboard() {
+  // Load products count
+  const pr = await fetch('/api/products');
+  const pd = await pr.json();
+  allProducts = pd.data || [];
+  document.getElementById('stat-products').textContent = allProducts.length;
+
+  // Load orders from local storage (demo data since we can't list all orders without an admin API)
+  const stored = JSON.parse(localStorage.getItem('tc_admin_orders') || '[]');
+  allOrders = stored;
+  const revenue = stored.reduce((s, o) => s + (o.total || 0), 0);
+  document.getElementById('stat-orders').textContent = stored.length;
+  document.getElementById('stat-revenue').textContent = '₹' + Math.round(revenue).toLocaleString('en-IN');
+  document.getElementById('stat-aov').textContent = stored.length > 0 ? '₹' + Math.round(revenue / stored.length) : '₹0';
+
+  renderRecentOrders(stored.slice(-5).reverse());
+  renderCharts(stored);
+}
+
+function renderRecentOrders(orders) {
+  const tbody = document.getElementById('recent-orders-body');
+  if (!orders.length) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--text2);padding:2rem">No orders yet — place a test order from the store!</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = orders.map(o => `
+    <tr>
+      <td><code style="font-size:0.7rem;color:var(--accent)">#${o.id.slice(0,8).toUpperCase()}</code></td>
+      <td>${o.customer_name || '—'}</td>
+      <td>${(o.items||[]).length} item(s)</td>
+      <td style="font-family:var(--font-mono);color:var(--accent)">₹${Math.round(o.total||0)}</td>
+      <td><span class="badge badge-${o.status||'confirmed'}">${o.status||'confirmed'}</span></td>
+      <td style="color:var(--text2);font-size:0.8rem">${o.created_at ? new Date(o.created_at).toLocaleDateString('en-IN') : '—'}</td>
+      <td><button class="btn btn-ghost btn-sm" onclick="viewOrder('${o.id}')">View</button></td>
+    </tr>
+  `).join('');
+}
+
+function renderCharts(orders) {
+  // Revenue last 7 days
+  const days = [];
+  const rev = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const label = d.toLocaleDateString('en-IN', {weekday:'short'});
+    days.push(label);
+    const dayRev = orders
+      .filter(o => o.created_at && new Date(o.created_at).toDateString() === d.toDateString())
+      .reduce((s,o) => s + (o.total||0), 0);
+    rev.push(Math.round(dayRev));
+  }
+
+  const rCtx = document.getElementById('revenue-chart').getContext('2d');
+  new Chart(rCtx, {
+    type: 'line',
+    data: {
+      labels: days,
+      datasets: [{
+        label: 'Revenue (₹)',
+        data: rev,
+        borderColor: '#e94560',
+        backgroundColor: 'rgba(233,69,96,0.08)',
+        fill: true,
+        tension: 0.4,
+        pointBackgroundColor: '#e94560',
+        pointRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: 'rgba(233,69,96,0.08)' }, ticks: { color: '#a0a0b0', font: { family: 'Space Mono', size: 10 } } },
+        y: { grid: { color: 'rgba(233,69,96,0.08)' }, ticks: { color: '#a0a0b0', font: { family: 'Space Mono', size: 10 } } }
+      }
+    }
+  });
+
+  // Category donut
+  const cats = {};
+  allProducts.forEach(p => { cats[p.category] = (cats[p.category]||0)+1; });
+  const cCtx = document.getElementById('category-chart').getContext('2d');
+  new Chart(cCtx, {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(cats),
+      datasets: [{
+        data: Object.values(cats),
+        backgroundColor: ['#e94560','#f5a623','#4caf50'],
+        borderWidth: 0,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { color: '#a0a0b0', font: { family: 'Space Mono', size: 10 }, padding: 16, boxWidth: 12 } }
+      },
+      cutout: '65%'
+    }
+  });
+}
+
+// ---- Products table ----
+async function loadProductsTable() {
+  if (!allProducts.length) {
+    const r = await fetch('/api/products'); const d = await r.json();
+    allProducts = d.data || [];
+  }
+  renderProductsTable(allProducts);
+}
+
+function renderProductsTable(products) {
+  const tbody = document.getElementById('products-table-body');
+  tbody.innerHTML = products.map(p => `
+    <tr>
+      <td>
+        <div class="product-thumb">
+          <div class="product-thumb-img">👕</div>
+          <div class="product-thumb-info">
+            <strong>${p.name}</strong>
+            <span>${(p.colors||[]).join(', ')}</span>
+          </div>
+        </div>
+      </td>
+      <td>${p.category}</td>
+      <td style="font-family:var(--font-mono);color:var(--accent)">₹${Math.round(p.price)}</td>
+      <td>${p.stock}</td>
+      <td>${p.badge ? `<span class="badge badge-new">${p.badge}</span>` : '<span style="color:var(--text2)">—</span>'}</td>
+      <td>
+        <div style="display:flex;gap:0.5rem">
+          <a href="/product/${p.id}" target="_blank" class="btn btn-ghost btn-sm">View</a>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function filterProductsByCategory(cat) {
+  const filtered = cat ? allProducts.filter(p => p.category === cat) : allProducts;
+  renderProductsTable(filtered);
+}
+
+// ---- Add Product ----
+function submitAddProduct() {
+  const name = document.getElementById('ap-name').value.trim();
+  const desc = document.getElementById('ap-desc').value.trim();
+  const price = parseFloat(document.getElementById('ap-price').value);
+  const category = document.getElementById('ap-category').value;
+  if (!name || !desc || !price || !category) { toast('Please fill required fields', 'error'); return; }
+  // In production: POST to /api/admin/products
+  toast(`✓ Product "${name}" saved! (Restart server to refresh DB in this demo)`, 'success');
+  clearProductForm();
+}
+
+function clearProductForm() {
+  ['ap-name','ap-desc','ap-price','ap-sizes','ap-colors','ap-stock','ap-badge','ap-image'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  document.getElementById('ap-category').value = '';
+}
+
+// ---- Orders ----
+async function loadOrders() {
+  const stored = JSON.parse(localStorage.getItem('tc_admin_orders') || '[]');
+  allOrders = stored;
+  document.getElementById('orders-count').textContent = `${stored.length} orders`;
+  renderOrdersTable(stored.reverse());
+}
+
+function renderOrdersTable(orders) {
+  const tbody = document.getElementById('orders-table-body');
+  if (!orders.length) {
+    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;color:var(--text2);padding:2rem">No orders yet. <a href="/" style="color:var(--accent)">Place a test order →</a></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = orders.map(o => `
+    <tr>
+      <td><code style="font-size:0.7rem;color:var(--accent)">#${(o.id||'').slice(0,8).toUpperCase()}</code></td>
+      <td>${o.customer_name||'—'}</td>
+      <td style="color:var(--text2);font-size:0.8rem">${o.email||'—'}</td>
+      <td style="font-family:var(--font-mono);color:var(--accent)">₹${Math.round(o.total||0)}</td>
+      <td style="text-transform:capitalize">${(o.payment_method||'').replace('_',' ')}</td>
+      <td><span class="badge badge-${o.status||'confirmed'}">${o.status||'confirmed'}</span></td>
+      <td style="color:var(--text2);font-size:0.8rem">${o.created_at ? new Date(o.created_at).toLocaleDateString('en-IN') : '—'}</td>
+      <td><button class="btn btn-ghost btn-sm" onclick="viewOrder('${o.id}')">Details</button></td>
+    </tr>
+  `).join('');
+}
+
+function filterOrders(status, btn) {
+  document.querySelectorAll('.order-filter').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const filtered = status === 'all' ? allOrders : allOrders.filter(o => (o.status||'confirmed') === status);
+  renderOrdersTable(filtered);
+}
+
+async function viewOrder(id) {
+  currentOrderId = id;
+  document.getElementById('order-modal').classList.add('open');
+  const stored = JSON.parse(localStorage.getItem('tc_admin_orders') || '[]');
+  const o = stored.find(x => x.id === id);
+  if (!o) { document.getElementById('order-modal-body').innerHTML = '<p style="color:var(--text2)">Order not found</p>'; return; }
+  document.getElementById('order-modal-body').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem">
+      <div>
+        <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--text2);margin-bottom:0.4rem">Customer</div>
+        <strong>${o.customer_name}</strong><br/>
+        <span style="color:var(--text2);font-size:0.85rem">${o.email}</span><br/>
+        <span style="color:var(--text2);font-size:0.85rem">${o.phone}</span>
+      </div>
+      <div>
+        <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--text2);margin-bottom:0.4rem">Delivery</div>
+        <span style="font-size:0.85rem">${o.address}, ${o.city}<br/>${o.state} — ${o.pincode}</span>
+      </div>
+    </div>
+    <div style="margin-bottom:1rem">
+      <div style="font-family:var(--font-mono);font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;color:var(--text2);margin-bottom:0.75rem">Items Ordered</div>
+      ${(o.items||[]).map(item => `
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0;border-bottom:1px solid var(--border);font-size:0.875rem">
+          <div>
+            <strong>${item.product_name}</strong>
+            <span style="color:var(--text2)"> · ${item.size} · ${item.color} × ${item.quantity}</span>
+          </div>
+          <span style="font-family:var(--font-mono);color:var(--accent)">₹${Math.round(item.price * item.quantity)}</span>
+        </div>
+      `).join('')}
+    </div>
+    <div style="display:flex;justify-content:space-between;padding-top:0.75rem">
+      <div>
+        <div style="font-size:0.8rem;color:var(--text2)">Payment: <strong>${(o.payment_method||'').replace('_',' ')}</strong></div>
+        <div style="font-size:0.8rem;color:var(--text2);margin-top:0.25rem">Status: <span class="badge badge-${o.status||'confirmed'}">${o.status||'confirmed'}</span></div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-family:var(--font-mono);font-size:1.4rem;color:var(--accent)">₹${Math.round(o.total||0)}</div>
+        <div style="font-size:0.75rem;color:var(--text2)">${new Date(o.created_at||Date.now()).toLocaleString('en-IN')}</div>
+      </div>
+    </div>
+  `;
+}
+
+function updateOrderStatus(status) {
+  if (!currentOrderId) return;
+  const stored = JSON.parse(localStorage.getItem('tc_admin_orders') || '[]');
+  const o = stored.find(x => x.id === currentOrderId);
+  if (o) { o.status = status; localStorage.setItem('tc_admin_orders', JSON.stringify(stored)); }
+  closeModal('order-modal');
+  toast(`Order marked as ${status}`);
+  loadOrders();
+}
+
+// ---- Customers ----
+async function loadCustomers() {
+  const stored = JSON.parse(localStorage.getItem('tc_admin_orders') || '[]');
+  const map = {};
+  stored.forEach(o => {
+    if (!map[o.email]) map[o.email] = { name: o.customer_name, email: o.email, phone: o.phone, city: o.city, orders: 0, spent: 0 };
+    map[o.email].orders++;
+    map[o.email].spent += (o.total||0);
+  });
+  const customers = Object.values(map);
+  const tbody = document.getElementById('customers-table-body');
+  if (!customers.length) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text2);padding:2rem">No customers yet.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = customers.map(c => `
+    <tr>
+      <td><strong>${c.name}</strong></td>
+      <td style="color:var(--text2)">${c.email}</td>
+      <td style="color:var(--text2)">${c.phone}</td>
+      <td style="color:var(--text2)">${c.city}</td>
+      <td>${c.orders}</td>
+      <td style="font-family:var(--font-mono);color:var(--accent)">₹${Math.round(c.spent).toLocaleString('en-IN')}</td>
+    </tr>
+  `).join('');
+}
+
+// ---- Global Search ----
+function globalSearch(q) {
+  q = q.toLowerCase();
+  if (!q) return;
+  const match = allProducts.filter(p => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q));
+  if (match.length) renderProductsTable(match);
+}
+
+// ---- Settings ----
+function saveSettings() { toast('Settings saved! ✓'); }
+
+// ---- Intercept order placement to save locally (bridge since no admin list API) ----
+// Orders placed from store are saved to localStorage for admin display
+const _origFetch = window.fetch;
+window.fetch = async function(...args) {
+  const res = await _origFetch(...args);
+  if (typeof args[0] === 'string' && args[0] === '/api/orders' && args[1]?.method === 'POST') {
+    const clone = res.clone();
+    const data = await clone.json();
+    if (data.success) {
+      const body = JSON.parse(args[1].body);
+      const orders = JSON.parse(localStorage.getItem('tc_admin_orders') || '[]');
+      orders.push({ id: data.order_id, ...body, status: 'confirmed', created_at: new Date().toISOString() });
+      localStorage.setItem('tc_admin_orders', JSON.stringify(orders));
+    }
+  }
+  return res;
+};
+
+// ---- Init ----
+loadDashboard();
+</script>
+</body>
+</html>

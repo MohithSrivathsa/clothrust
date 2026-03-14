@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Order Confirmed — ThreadCraft{% endblock %}
+{% block content %}
+
+<div class="success-page">
+  <div class="success-icon">
+    <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="40" cy="40" r="38" fill="none" stroke="#4CAF50" stroke-width="2"/>
+      <polyline points="20,40 34,54 60,26" fill="none" stroke="#4CAF50" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <h1>Order Confirmed! 🎉</h1>
+  <p class="success-sub">Thank you for your order. We're getting it ready for you!</p>
+
+  <div class="order-id-box">
+    <span>Order ID</span>
+    <strong id="order-display">{{ order_id }}</strong>
+  </div>
+
+  <div class="success-steps">
+    <div class="sstep active">
+      <div class="sstep-icon">✓</div>
+      <span>Order Placed</span>
+    </div>
+    <div class="sstep-line"></div>
+    <div class="sstep">
+      <div class="sstep-icon">🎨</div>
+      <span>Printing</span>
+    </div>
+    <div class="sstep-line"></div>
+    <div class="sstep">
+      <div class="sstep-icon">📦</div>
+      <span>Packed</span>
+    </div>
+    <div class="sstep-line"></div>
+    <div class="sstep">
+      <div class="sstep-icon">🚚</div>
+      <span>Shipped</span>
+    </div>
+    <div class="sstep-line"></div>
+    <div class="sstep">
+      <div class="sstep-icon">🏠</div>
+      <span>Delivered</span>
+    </div>
+  </div>
+
+  <p class="delivery-note">Estimated delivery: <strong>3–5 business days</strong></p>
+
+  <div class="success-actions">
+    <a href="/shop" class="btn btn-primary">Continue Shopping</a>
+    <a href="/" class="btn btn-ghost">Back to Home</a>
+  </div>
+</div>
+
+{% endblock %}

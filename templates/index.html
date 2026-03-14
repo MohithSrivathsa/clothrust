@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% block title %}ThreadCraft — Premium Custom Printed Apparel{% endblock %}
+{% block content %}
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">New Collection 2024</p>
+    <h1 class="hero-title">Art You<br/><em>Wear</em></h1>
+    <p class="hero-sub">Premium custom-printed apparel where every thread tells a story. Hand-crafted designs on quality fabrics.</p>
+    <div class="hero-ctas">
+      <a href="/shop" class="btn btn-primary">Shop Collection</a>
+      <a href="/shop?category=T-Shirts" class="btn btn-ghost">View T-Shirts</a>
+    </div>
+    <div class="hero-stats">
+      <div><strong>500+</strong><span>Designs</span></div>
+      <div><strong>10K+</strong><span>Happy Customers</span></div>
+      <div><strong>100%</strong><span>Eco-Friendly</span></div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-tshirt">
+      <svg viewBox="0 0 300 350" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="teeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#f0ece4"/>
+            <stop offset="100%" style="stop-color:#ede8e0"/>
+          </linearGradient>
+        </defs>
+        <!-- T-shirt shape -->
+        <path d="M75,30 L30,80 L70,95 L60,300 L240,300 L230,95 L270,80 L225,30 C210,55 195,65 150,65 C105,65 90,55 75,30Z" fill="url(#teeGrad)" stroke="#c8502a" stroke-width="1"/>
+        <!-- Design on shirt -->
+        <circle cx="150" cy="170" r="55" fill="none" stroke="#c8502a" stroke-width="1.5" opacity="0.6"/>
+        <circle cx="150" cy="170" r="40" fill="none" stroke="#c8502a" stroke-width="1" opacity="0.4"/>
+        <circle cx="150" cy="170" r="8" fill="#c8502a" opacity="0.8"/>
+        <!-- Rays -->
+        <line x1="150" y1="115" x2="150" y2="108" stroke="#c8502a" stroke-width="1.5" opacity="0.7" transform="rotate(0,150,170)"/>
+        <line x1="150" y1="115" x2="150" y2="108" stroke="#c8502a" stroke-width="1.5" opacity="0.7" transform="rotate(30,150,170)"/>
+        <line x1="150" y1="115" x2="150" y2="108" stroke="#c8502a" stroke-width="1.5" opacity="0.7" transform="rotate(60,150,170)"/>
+        <line x1="150" y1="115" x2="150" y2="108" stroke="#c8502a" stroke-width="1.5" opacity="0.7" transform="rotate(90,150,170)"/>
+        <line x1="150" y1="115" x2="150" y2="108" stroke="#c8502a" stroke-width="1.5" opacity="0.7" transform="rotate(120,150,170)"/>
+        <line x1="150" y1="115" x2="150" y2="108" stroke="#c8502a" stroke-width="1.5" opacity="0.7" transform="rotate(150,150,170)"/>
+        <line x1="150" y1="115" x2="150" y2="108" stroke="#c8502a" stroke-width="1.5" opacity="0.7" transform="rotate(180,150,170)"/>
+        <line x1="150" y1="115" x2="150" y2="108" stroke="#c8502a" stroke-width="1.5" opacity="0.7" transform="rotate(210,150,170)"/>
+        <line x1="150" y1="115" x2="150" y2="108" stroke="#c8502a" stroke-width="1.5" opacity="0.7" transform="rotate(240,150,170)"/>
+        <line x1="150" y1="115" x2="150" y2="108" stroke="#c8502a" stroke-width="1.5" opacity="0.7" transform="rotate(270,150,170)"/>
+        <line x1="150" y1="115" x2="150" y2="108" stroke="#c8502a" stroke-width="1.5" opacity="0.7" transform="rotate(300,150,170)"/>
+        <line x1="150" y1="115" x2="150" y2="108" stroke="#c8502a" stroke-width="1.5" opacity="0.7" transform="rotate(330,150,170)"/>
+        <text x="150" y="245" text-anchor="middle" fill="#c8502a" font-family="Space Mono" font-size="9" opacity="0.7">THREADCRAFT ✦ HANDPRINTED</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee">
+    <span>Free Shipping Over ₹999 &nbsp;<em>✦</em>&nbsp; Eco-Friendly Inks &nbsp;<em>✦</em>&nbsp; Premium Cotton &nbsp;<em>✦</em>&nbsp; Custom Orders Welcome &nbsp;<em>✦</em>&nbsp; Free Shipping Over ₹999 &nbsp;<em>✦</em>&nbsp; Eco-Friendly Inks &nbsp;<em>✦</em>&nbsp; Premium Cotton &nbsp;<em>✦</em>&nbsp; Custom Orders Welcome &nbsp;<em>✦</em>&nbsp;</span>
+    <span>Free Shipping Over ₹999 &nbsp;<em>✦</em>&nbsp; Eco-Friendly Inks &nbsp;<em>✦</em>&nbsp; Premium Cotton &nbsp;<em>✦</em>&nbsp; Custom Orders Welcome &nbsp;<em>✦</em>&nbsp; Free Shipping Over ₹999 &nbsp;<em>✦</em>&nbsp; Eco-Friendly Inks &nbsp;<em>✦</em>&nbsp; Premium Cotton &nbsp;<em>✦</em>&nbsp; Custom Orders Welcome &nbsp;<em>✦</em>&nbsp;</span>
+  </div>
+</div>
+
+<!-- FEATURED PRODUCTS -->
+<section class="section">
+  <div class="section-header">
+    <p class="section-label">Handpicked for You</p>
+    <h2 class="section-title">Featured Pieces</h2>
+  </div>
+  <div class="products-grid">
+    {% for product in products %}
+    <div class="product-card" data-id="{{ product.id }}">
+      {% if product.badge %}
+      <div class="product-badge">{{ product.badge }}</div>
+      {% endif %}
+      <a href="/product/{{ product.id }}" class="product-image-wrap">
+        <div class="product-image-placeholder">
+          <svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="grad{{ product.id }}" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#f0ece4"/>
+                <stop offset="100%" style="stop-color:#ddd5c8"/>
+              </linearGradient>
+            </defs>
+            <path d="M50,20 L20,55 L47,65 L40,200 L160,200 L153,65 L180,55 L150,20 C140,37 132,43 100,43 C68,43 60,37 50,20Z" fill="url(#grad{{ product.id }})" stroke="#c8502a" stroke-width="0.8"/>
+            <text x="100" y="120" text-anchor="middle" fill="#c8502a" font-family="Space Mono" font-size="22" opacity="0.5">TC</text>
+            <circle cx="100" cy="110" r="25" fill="none" stroke="#c8502a" stroke-width="0.8" opacity="0.4"/>
+          </svg>
+        </div>
+        <div class="product-overlay">
+          <span>Quick View</span>
+        </div>
+      </a>
+      <div class="product-info">
+        <span class="product-category">{{ product.category }}</span>
+        <h3 class="product-name">{{ product.name }}</h3>
+        <div class="product-footer">
+          <span class="product-price">₹{{ product.price | int }}</span>
+          <button class="quick-add-btn" onclick="quickAdd({{ product.id }}, '{{ product.name }}', {{ product.price }}, '{{ product.image_url }}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="section-cta">
+    <a href="/shop" class="btn btn-outline">View All Products</a>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section class="categories-section">
+  <div class="cat-grid">
+    <a href="/shop?category=T-Shirts" class="cat-card cat-tee">
+      <div class="cat-content">
+        <span class="cat-count">12 Styles</span>
+        <h3>T-Shirts</h3>
+        <p>Everyday comfort meets art</p>
+      </div>
+    </a>
+    <a href="/shop?category=Hoodies" class="cat-card cat-hoodie">
+      <div class="cat-content">
+        <span class="cat-count">6 Styles</span>
+        <h3>Hoodies</h3>
+        <p>Cozy premium fleece prints</p>
+      </div>
+    </a>
+    <a href="/shop?category=Shirts" class="cat-card cat-shirt">
+      <div class="cat-content">
+        <span class="cat-count">8 Styles</span>
+        <h3>Shirts</h3>
+        <p>Elevated everyday wear</p>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- USP SECTION -->
+<section class="usp-section">
+  <div class="usp-grid">
+    <div class="usp-item">
+      <div class="usp-icon">🎨</div>
+      <h4>Original Designs</h4>
+      <p>Every print is an original artwork created by our in-house designers</p>
+    </div>
+    <div class="usp-item">
+      <div class="usp-icon">♻️</div>
+      <h4>Eco-Friendly</h4>
+      <p>Water-based inks and organic cotton for a greener planet</p>
+    </div>
+    <div class="usp-item">
+      <div class="usp-icon">✂️</div>
+      <h4>Quality Fabric</h4>
+      <p>Premium 180–240 GSM cotton for softness that lasts wash after wash</p>
+    </div>
+    <div class="usp-item">
+      <div class="usp-icon">🚚</div>
+      <h4>Fast Delivery</h4>
+      <p>Shipped within 2-3 business days, free on orders above ₹999</p>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function quickAdd(id, name, price, img) {
+  // Open a size/color picker modal
+  showQuickAddModal(id, name, price, img);
+}
+</script>
+{% endblock %}

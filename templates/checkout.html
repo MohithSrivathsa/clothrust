@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% block title %}Checkout — ThreadCraft{% endblock %}
+{% block content %}
+
+<div class="checkout-page">
+  <div class="page-header">
+    <h1>Checkout</h1>
+    <div class="checkout-steps">
+      <span class="step active">1. Details</span>
+      <span class="step-arrow">→</span>
+      <span class="step">2. Payment</span>
+      <span class="step-arrow">→</span>
+      <span class="step">3. Confirm</span>
+    </div>
+  </div>
+
+  <div class="checkout-layout">
+    <!-- Form -->
+    <div class="checkout-form-wrap">
+      <div class="form-section">
+        <h3>Personal Information</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Full Name *</label>
+            <input type="text" id="customer_name" placeholder="Rahul Sharma" required/>
+          </div>
+          <div class="form-group">
+            <label>Email *</label>
+            <input type="email" id="email" placeholder="rahul@example.com" required/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Phone *</label>
+          <input type="tel" id="phone" placeholder="+91 98765 43210" required/>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Delivery Address</h3>
+        <div class="form-group">
+          <label>Address *</label>
+          <input type="text" id="address" placeholder="House / Flat / Street" required/>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>City *</label>
+            <input type="text" id="city" placeholder="Mumbai" required/>
+          </div>
+          <div class="form-group">
+            <label>State *</label>
+            <input type="text" id="state" placeholder="Maharashtra" required/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>PIN Code *</label>
+          <input type="text" id="pincode" placeholder="400001" maxlength="6" required/>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h3>Payment Method</h3>
+        <div class="payment-options">
+          <label class="payment-option">
+            <input type="radio" name="payment" value="upi" checked/>
+            <div class="payment-label">
+              <span class="payment-icon">📱</span>
+              <div>
+                <strong>UPI / GPay / PhonePe</strong>
+                <p>Instant, zero fees</p>
+              </div>
+            </div>
+          </label>
+          <label class="payment-option">
+            <input type="radio" name="payment" value="card"/>
+            <div class="payment-label">
+              <span class="payment-icon">💳</span>
+              <div>
+                <strong>Credit / Debit Card</strong>
+                <p>Visa, Mastercard, RuPay</p>
+              </div>
+            </div>
+          </label>
+          <label class="payment-option">
+            <input type="radio" name="payment" value="cod"/>
+            <div class="payment-label">
+              <span class="payment-icon">💵</span>
+              <div>
+                <strong>Cash on Delivery</strong>
+                <p>Pay when you receive</p>
+              </div>
+            </div>
+          </label>
+          <label class="payment-option">
+            <input type="radio" name="payment" value="netbanking"/>
+            <div class="payment-label">
+              <span class="payment-icon">🏦</span>
+              <div>
+                <strong>Net Banking</strong>
+                <p>All major banks</p>
+              </div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <button class="btn btn-primary btn-full btn-large" onclick="placeOrder()">
+        Place Order
+      </button>
+      <p class="checkout-note">🔒 Your information is encrypted and secure</p>
+    </div>
+
+    <!-- Summary -->
+    <aside class="checkout-summary">
+      <h3>Your Order</h3>
+      <div id="checkout-items">
+        {% for item in cart.items %}
+        <div class="checkout-item">
+          <div class="ci-image">
+            <svg viewBox="0 0 60 68" xmlns="http://www.w3.org/2000/svg">
+              <path d="M15,6 L6,17 L14,20 L12,60 L48,60 L46,20 L54,17 L45,6 C42,11 40,13 30,13 C20,13 18,11 15,6Z" fill="#ede8df" stroke="#c8502a" stroke-width="0.7"/>
+            </svg>
+          </div>
+          <div class="ci-details">
+            <strong>{{ item.product_name }}</strong>
+            <span>{{ item.size }} · {{ item.color }} × {{ item.quantity }}</span>
+          </div>
+          <span class="ci-price">₹{{ (item.price * item.quantity) | int }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="summary-rows">
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span>₹{{ cart.total | int }}</span>
+        </div>
+        <div class="summary-row">
+          <span>Shipping</span>
+          <span>{% if cart.total >= 999 %}FREE{% else %}₹99{% endif %}</span>
+        </div>
+        <div class="summary-row total-row">
+          <span>Total</span>
+          <span>₹{% if cart.total >= 999 %}{{ cart.total | int }}{% else %}{{ (cart.total + 99) | int }}{% endif %}</span>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+const cartData = {{ cart | json_encode() }};
+
+async function placeOrder() {
+  const name = document.getElementById('customer_name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const address = document.getElementById('address').value.trim();
+  const city = document.getElementById('city').value.trim();
+  const state = document.getElementById('state').value.trim();
+  const pincode = document.getElementById('pincode').value.trim();
+  const payment = document.querySelector('input[name="payment"]:checked').value;
+
+  if (!name || !email || !phone || !address || !city || !state || !pincode) {
+    showToast('Please fill all required fields', 'error');
+    return;
+  }
+
+  const btn = document.querySelector('.checkout-page .btn-primary');
+  btn.textContent = 'Placing Order...';
+  btn.disabled = true;
+
+  const res = await fetch('/api/orders', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      customer_name: name, email, phone, address, city, state, pincode,
+      payment_method: payment,
+      items: cartData.items,
+      total: cartData.total
+    })
+  });
+  const data = await res.json();
+  if (data.success) {
+    window.location.href = `/order-success?order_id=${data.order_id}`;
+  } else {
+    showToast('Failed to place order. Try again.', 'error');
+    btn.textContent = 'Place Order';
+    btn.disabled = false;
+  }
+}
+</script>
+{% endblock %}

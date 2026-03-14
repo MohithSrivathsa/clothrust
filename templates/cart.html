@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Cart — ThreadCraft{% endblock %}
+{% block content %}
+
+<div class="cart-page">
+  <div class="page-header">
+    <h1>Your Cart</h1>
+    <span class="item-count" id="cart-item-count">{{ cart.items | length }} items</span>
+  </div>
+
+  {% if cart.items | length == 0 %}
+  <div class="empty-cart">
+    <div class="empty-icon">🛍️</div>
+    <h2>Your cart is empty</h2>
+    <p>Looks like you haven't added anything yet.</p>
+    <a href="/shop" class="btn btn-primary">Start Shopping</a>
+  </div>
+  {% else %}
+
+  <div class="cart-layout">
+    <div class="cart-items" id="cart-items">
+      {% for item in cart.items %}
+      <div class="cart-item" id="item-{{ item.product_id }}-{{ item.size }}-{{ item.color | replace(from=" ", to="-") }}">
+        <div class="cart-item-image">
+          <svg viewBox="0 0 80 90" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20,8 L8,22 L19,26 L16,80 L64,80 L61,26 L72,22 L60,8 C56,15 53,17 40,17 C27,17 24,15 20,8Z" fill="#ede8df" stroke="#c8502a" stroke-width="0.8"/>
+            <circle cx="40" cy="47" r="14" fill="none" stroke="#c8502a" stroke-width="0.8" opacity="0.6"/>
+          </svg>
+        </div>
+        <div class="cart-item-details">
+          <h4>{{ item.product_name }}</h4>
+          <p>Size: {{ item.size }} · Color: {{ item.color }}</p>
+          <span class="item-price">₹{{ item.price | int }} each</span>
+        </div>
+        <div class="cart-item-qty">
+          <button onclick="updateItem({{ item.product_id }}, '{{ item.size }}', '{{ item.color }}', {{ item.quantity - 1 }})">−</button>
+          <span id="qty-{{ item.product_id }}-{{ item.size }}">{{ item.quantity }}</span>
+          <button onclick="updateItem({{ item.product_id }}, '{{ item.size }}', '{{ item.color }}', {{ item.quantity + 1 }})">+</button>
+        </div>
+        <div class="cart-item-total">
+          <span>₹{{ (item.price * item.quantity) | int }}</span>
+          <button class="remove-btn" onclick="removeItem({{ item.product_id }}, '{{ item.size }}', '{{ item.color }}')">✕</button>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <aside class="cart-summary">
+      <h3>Order Summary</h3>
+      <div class="summary-rows">
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <span id="subtotal">₹{{ cart.total | int }}</span>
+        </div>
+        <div class="summary-row">
+          <span>Shipping</span>
+          <span id="shipping">{% if cart.total >= 999 %}Free{% else %}₹99{% endif %}</span>
+        </div>
+        <div class="summary-row total-row">
+          <span>Total</span>
+          <span id="total">₹{% if cart.total >= 999 %}{{ cart.total | int }}{% else %}{{ (cart.total + 99) | int }}{% endif %}</span>
+        </div>
+      </div>
+      {% if cart.total < 999 %}
+      <p class="free-shipping-notice">Add ₹{{ (999 - cart.total) | int }} more for free shipping!</p>
+      {% endif %}
+      <a href="/checkout" class="btn btn-primary btn-full">Proceed to Checkout</a>
+      <a href="/shop" class="btn btn-ghost btn-full" style="margin-top:0.75rem">Continue Shopping</a>
+    </aside>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+async function removeItem(id, size, color) {
+  const res = await fetch('/api/cart/remove', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({product_id: id, size, color})
+  });
+  const data = await res.json();
+  if (data.success) {
+    const key = `${id}-${size}-${color.replace(/ /g, '-')}`;
+    const el = document.getElementById(`item-${key}`);
+    if (el) el.remove();
+    document.getElementById('subtotal').textContent = '₹' + Math.round(data.total);
+    document.getElementById('cart-count').textContent = data.cart_count;
+    document.getElementById('cart-item-count').textContent = data.cart_count + ' items';
+    showToast('Item removed from cart');
+  }
+}
+
+async function updateItem(id, size, color, qty) {
+  if (qty < 1) { removeItem(id, size, color); return; }
+  const res = await fetch('/api/cart/update', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({product_id: id, size, color, quantity: qty})
+  });
+  const data = await res.json();
+  if (data.success) {
+    const qtyEl = document.getElementById(`qty-${id}-${size}`);
+    if (qtyEl) qtyEl.textContent = qty;
+    document.getElementById('subtotal').textContent = '₹' + Math.round(data.total);
+    document.getElementById('cart-count').textContent = data.cart_count;
+  }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,23 @@
+[package]
+name = "tshirt-store"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "tshirt-store"
+path = "src/main.rs"
+
+[dependencies]
+actix-web = "4"
+actix-files = "0.6"
+actix-session = { version = "0.9", features = ["cookie-session"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }
+uuid = { version = "1", features = ["v4"] }
+rusqlite = { version = "0.31", features = ["bundled"] }
+bcrypt = "0.15"
+chrono = { version = "0.4", features = ["serde"] }
+env_logger = "0.11"
+log = "0.4"
+tera = "1"

@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+{% block title %}{{ product.name }} — ThreadCraft{% endblock %}
+{% block content %}
+
+<div class="product-detail-page">
+  <div class="breadcrumb">
+    <a href="/">Home</a> / <a href="/shop">Shop</a> / <span>{{ product.name }}</span>
+  </div>
+
+  <div class="product-detail-grid">
+    <!-- Image -->
+    <div class="product-detail-image">
+      {% if product.badge %}
+      <div class="product-badge">{{ product.badge }}</div>
+      {% endif %}
+      <div class="detail-image-main">
+        <svg viewBox="0 0 400 450" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="dg1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#f0ece4"/>
+              <stop offset="100%" style="stop-color:#ede8e0"/>
+            </linearGradient>
+            <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" style="stop-color:#c8502a;stop-opacity:0.2"/>
+              <stop offset="100%" style="stop-color:#c8502a;stop-opacity:0"/>
+            </radialGradient>
+          </defs>
+          <rect width="400" height="450" fill="#0f0f1a"/>
+          <circle cx="200" cy="225" r="150" fill="url(#glow)"/>
+          <path d="M100,60 L40,130 L94,150 L80,380 L320,380 L306,150 L360,130 L300,60 C280,95 264,108 200,108 C136,108 120,95 100,60Z" fill="url(#dg1)" stroke="#c8502a" stroke-width="1.5"/>
+          <!-- Art on shirt -->
+          <circle cx="200" cy="230" r="70" fill="none" stroke="#c8502a" stroke-width="1.5" opacity="0.7"/>
+          <circle cx="200" cy="230" r="50" fill="none" stroke="#c8502a" stroke-width="1" opacity="0.5"/>
+          <circle cx="200" cy="230" r="30" fill="none" stroke="#c8502a" stroke-width="0.8" opacity="0.4"/>
+          <circle cx="200" cy="230" r="10" fill="#c8502a" opacity="0.6"/>
+          <line x1="200" y1="160" x2="200" y2="300" stroke="#c8502a" stroke-width="0.8" opacity="0.3"/>
+          <line x1="130" y1="230" x2="270" y2="230" stroke="#c8502a" stroke-width="0.8" opacity="0.3"/>
+          <text x="200" y="330" text-anchor="middle" fill="#c8502a" font-family="Space Mono" font-size="11" opacity="0.5" letter-spacing="4">THREADCRAFT</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Info -->
+    <div class="product-detail-info">
+      <span class="product-category">{{ product.category }}</span>
+      <h1 class="detail-title">{{ product.name }}</h1>
+
+      {% if product.badge %}
+      <span class="detail-badge">{{ product.badge }}</span>
+      {% endif %}
+
+      <div class="detail-price">₹{{ product.price | int }}</div>
+      <p class="detail-desc">{{ product.description }}</p>
+
+      <!-- Size Selector -->
+      <div class="selector-group">
+        <label>Select Size</label>
+        <div class="size-options" id="size-options">
+          {% for size in product.sizes %}
+          <button class="size-btn" onclick="selectSize('{{ size }}')" data-size="{{ size }}">{{ size }}</button>
+          {% endfor %}
+        </div>
+        <a href="#" class="size-guide">Size Guide →</a>
+      </div>
+
+      <!-- Color Selector -->
+      <div class="selector-group">
+        <label>Select Color: <span id="selected-color-name">{{ product.colors[0] }}</span></label>
+        <div class="color-options" id="color-options">
+          {% for color in product.colors %}
+          <button class="color-label-btn {% if loop.first %}active{% endif %}" onclick="selectColor('{{ color }}')" data-color="{{ color }}">{{ color }}</button>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Qty -->
+      <div class="selector-group">
+        <label>Quantity</label>
+        <div class="qty-control">
+          <button onclick="changeQty(-1)">−</button>
+          <span id="qty-display">1</span>
+          <button onclick="changeQty(1)">+</button>
+        </div>
+      </div>
+
+      <div class="detail-actions">
+        <button class="btn btn-primary btn-large" onclick="addToCart({{ product.id }}, '{{ product.name }}')">
+          Add to Cart
+        </button>
+        <a href="/cart" class="btn btn-ghost btn-large">View Cart</a>
+      </div>
+
+      <div class="detail-meta">
+        <div class="meta-item">
+          <span>🚚</span>
+          <p><strong>Free shipping</strong> on orders above ₹999</p>
+        </div>
+        <div class="meta-item">
+          <span>♻️</span>
+          <p><strong>Eco-friendly</strong> water-based inks</p>
+        </div>
+        <div class="meta-item">
+          <span>↩️</span>
+          <p><strong>Easy returns</strong> within 7 days</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+let selectedSize = null;
+let selectedColor = '{{ product.colors[0] }}';
+let qty = 1;
+
+function selectSize(size) {
+  selectedSize = size;
+  document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`[data-size="${size}"]`).classList.add('active');
+}
+
+function selectColor(color) {
+  selectedColor = color;
+  document.getElementById('selected-color-name').textContent = color;
+  document.querySelectorAll('.color-label-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`[data-color="${color}"]`).classList.add('active');
+}
+
+function changeQty(delta) {
+  qty = Math.max(1, Math.min(10, qty + delta));
+  document.getElementById('qty-display').textContent = qty;
+}
+
+async function addToCart(productId, name) {
+  if (!selectedSize) { showToast('Please select a size', 'error'); return; }
+  const res = await fetch('/api/cart/add', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ product_id: productId, size: selectedSize, color: selectedColor, quantity: qty })
+  });
+  const data = await res.json();
+  if (data.success) {
+    document.getElementById('cart-count').textContent = data.cart_count;
+    showToast(`${name} added to cart! ✓`);
+  }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Shop — ThreadCraft{% endblock %}
+{% block content %}
+
+<section class="shop-header">
+  <div class="shop-header-inner">
+    <h1>{% if active_category %}{{ active_category }}{% else %}All Products{% endif %}</h1>
+    <p>{{ products | length }} pieces in collection</p>
+  </div>
+</section>
+
+<section class="shop-section">
+  <aside class="shop-filters">
+    <h3>Category</h3>
+    <ul class="filter-list">
+      <li><a href="/shop" class="{% if not active_category %}active{% endif %}">All Products</a></li>
+      <li><a href="/shop?category=T-Shirts" class="{% if active_category == 'T-Shirts' %}active{% endif %}">T-Shirts</a></li>
+      <li><a href="/shop?category=Shirts" class="{% if active_category == 'Shirts' %}active{% endif %}">Shirts</a></li>
+      <li><a href="/shop?category=Hoodies" class="{% if active_category == 'Hoodies' %}active{% endif %}">Hoodies</a></li>
+    </ul>
+    <h3 style="margin-top:2rem">Price Range</h3>
+    <div class="price-range">
+      <input type="range" min="0" max="3000" value="3000" id="price-range" oninput="filterByPrice(this.value)"/>
+      <div class="price-labels"><span>₹0</span><span id="price-val">₹3000</span></div>
+    </div>
+  </aside>
+
+  <div class="shop-main">
+    <div class="shop-toolbar">
+      <span class="results-count">Showing <strong>{{ products | length }}</strong> results</span>
+      <select class="sort-select" onchange="sortProducts(this.value)">
+        <option value="default">Sort: Featured</option>
+        <option value="price-asc">Price: Low to High</option>
+        <option value="price-desc">Price: High to Low</option>
+        <option value="name">Name A–Z</option>
+      </select>
+    </div>
+
+    <div class="products-grid" id="products-grid">
+      {% for product in products %}
+      <div class="product-card" data-id="{{ product.id }}" data-price="{{ product.price }}">
+        {% if product.badge %}
+        <div class="product-badge">{{ product.badge }}</div>
+        {% endif %}
+        <a href="/product/{{ product.id }}" class="product-image-wrap">
+          <div class="product-image-placeholder">
+            <svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="sg{{ product.id }}" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style="stop-color:#f0ece4"/>
+                  <stop offset="100%" style="stop-color:#ddd5c8"/>
+                </linearGradient>
+              </defs>
+              <path d="M50,20 L20,55 L47,65 L40,200 L160,200 L153,65 L180,55 L150,20 C140,37 132,43 100,43 C68,43 60,37 50,20Z" fill="url(#sg{{ product.id }})" stroke="#c8502a" stroke-width="0.8"/>
+              <text x="100" y="115" text-anchor="middle" fill="#c8502a" font-family="Space Mono" font-size="11" opacity="0.6">{{ product.name | truncate(length=10) }}</text>
+              <circle cx="100" cy="100" r="28" fill="none" stroke="#c8502a" stroke-width="0.8" opacity="0.3"/>
+            </svg>
+          </div>
+          <div class="product-overlay"><span>View Details</span></div>
+        </a>
+        <div class="product-info">
+          <span class="product-category">{{ product.category }}</span>
+          <h3 class="product-name">{{ product.name }}</h3>
+          <div class="product-colors-preview">
+            {% for color in product.colors %}
+            <span class="color-dot" title="{{ color }}"></span>
+            {% endfor %}
+          </div>
+          <div class="product-footer">
+            <span class="product-price">₹{{ product.price | int }}</span>
+            <a href="/product/{{ product.id }}" class="btn btn-sm">Buy Now</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function filterByPrice(val) {
+  document.getElementById('price-val').textContent = '₹' + val;
+  document.querySelectorAll('.product-card').forEach(card => {
+    const price = parseFloat(card.dataset.price);
+    card.style.display = price <= val ? '' : 'none';
+  });
+}
+
+function sortProducts(val) {
+  const grid = document.getElementById('products-grid');
+  const cards = [...grid.querySelectorAll('.product-card')];
+  if (val === 'price-asc') cards.sort((a,b) => parseFloat(a.dataset.price) - parseFloat(b.dataset.price));
+  if (val === 'price-desc') cards.sort((a,b) => parseFloat(b.dataset.price) - parseFloat(a.dataset.price));
+  if (val === 'name') cards.sort((a,b) => a.querySelector('.product-name').textContent.localeCompare(b.querySelector('.product-name').textContent));
+  cards.forEach(c => grid.appendChild(c));
+}
+</script>
+{% endblock %}

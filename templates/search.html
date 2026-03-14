@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Search: "{{ query }}" — ThreadCraft{% endblock %}
+{% block content %}
+
+<section class="shop-header">
+  <div class="shop-header-inner">
+    <h1>Search Results</h1>
+    <p>{{ products | length }} result(s) for "{{ query }}"</p>
+  </div>
+</section>
+
+<section class="section">
+  <!-- Search bar -->
+  <form action="/search" method="get" style="max-width:560px;margin:0 auto 3rem;display:flex;gap:0.75rem">
+    <input
+      type="text" name="q" value="{{ query }}"
+      placeholder="Search products..."
+      style="flex:1;background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:0.85rem 1.25rem;color:var(--text);font-family:var(--font-body);font-size:1rem"
+    />
+    <button type="submit" class="btn btn-primary">Search</button>
+  </form>
+
+  {% if products | length == 0 %}
+  <div style="text-align:center;padding:3rem 0">
+    <div style="font-size:3rem;margin-bottom:1rem">🔍</div>
+    <h2 style="font-family:var(--font-display);font-size:1.8rem;margin-bottom:0.75rem">No results found</h2>
+    <p style="color:var(--text2);margin-bottom:2rem">Try searching for "t-shirt", "hoodie", "black", or "abstract"</p>
+    <a href="/shop" class="btn btn-primary">Browse All Products</a>
+  </div>
+  {% else %}
+  <div class="products-grid">
+    {% for product in products %}
+    <div class="product-card">
+      {% if product.badge %}
+      <div class="product-badge">{{ product.badge }}</div>
+      {% endif %}
+      <a href="/product/{{ product.id }}" class="product-image-wrap">
+        <div class="product-image-placeholder">
+          <svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="srg{{ product.id }}" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#f0ece4"/>
+                <stop offset="100%" style="stop-color:#ddd5c8"/>
+              </linearGradient>
+            </defs>
+            <path d="M50,20 L20,55 L47,65 L40,200 L160,200 L153,65 L180,55 L150,20 C140,37 132,43 100,43 C68,43 60,37 50,20Z" fill="url(#srg{{ product.id }})" stroke="#c8502a" stroke-width="0.8"/>
+            <text x="100" y="115" text-anchor="middle" fill="#c8502a" font-family="Space Mono" font-size="11" opacity="0.6">{{ product.name | truncate(length=10) }}</text>
+          </svg>
+        </div>
+        <div class="product-overlay"><span>View Details</span></div>
+      </a>
+      <div class="product-info">
+        <span class="product-category">{{ product.category }}</span>
+        <h3 class="product-name">{{ product.name }}</h3>
+        <div class="product-footer">
+          <span class="product-price">₹{{ product.price | int }}</span>
+          <a href="/product/{{ product.id }}" class="btn btn-sm">Buy Now</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</section>
+
+{% endblock %}
