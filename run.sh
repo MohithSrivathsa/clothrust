@@ -1,29 +1,17 @@
 #!/usr/bin/env bash
-set -e
+set -a
+[ -f .env ] && source .env
+set +a
 
 echo ""
-echo "  ████████╗██╗  ██╗██████╗ ███████╗ █████╗ ██████╗  ██████╗██████╗  █████╗ ███████╗████████╗"
-echo "     ██╔══╝██║  ██║██╔══██╗██╔════╝██╔══██╗██╔══██╗██╔════╝██╔══██╗██╔══██╗██╔════╝╚══██╔══╝"
-echo "     ██║   ███████║██████╔╝█████╗  ███████║██║  ██║██║     ██████╔╝███████║█████╗     ██║   "
-echo "     ██║   ██╔══██║██╔══██╗██╔══╝  ██╔══██║██║  ██║██║     ██╔══██╗██╔══██║██╔══╝     ██║   "
-echo "     ██║   ██║  ██║██║  ██║███████╗██║  ██║██████╔╝╚██████╗██║  ██║██║  ██║██║        ██║   "
-echo "     ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═════╝  ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝        ╚═╝"
-echo ""
-echo "  Premium Custom Printed Apparel Store"
+echo "  ThreadCraft Store"
 echo ""
 
-# Check Rust
 if ! command -v cargo &> /dev/null; then
-  echo "❌  Rust is not installed."
-  echo "    Install it from: https://rustup.rs"
-  echo "    Run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
+  echo "❌ Rust not installed. Run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
   exit 1
 fi
 
 echo "✅  Rust found: $(rustc --version)"
-echo ""
-echo "🔨  Building ThreadCraft (this may take 2-3 minutes on first run)..."
-echo ""
-
+echo "🔨  Building..."
 RUST_LOG=info cargo run
-

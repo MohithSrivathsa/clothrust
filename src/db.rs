@@ -24,9 +24,16 @@ pub fn initialize_db(conn: &Connection) -> Result<()> {
             state TEXT NOT NULL,
             pincode TEXT NOT NULL,
             payment_method TEXT NOT NULL,
+            stripe_payment_id TEXT,
             status TEXT NOT NULL DEFAULT 'confirmed',
             total REAL NOT NULL,
             created_at TEXT NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS carts (
+            user_sub TEXT NOT NULL,
+            cart_json TEXT NOT NULL DEFAULT '[]',
+            updated_at TEXT NOT NULL,
+            PRIMARY KEY(user_sub)
         );
         CREATE TABLE IF NOT EXISTS order_items (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -37,6 +44,11 @@ pub fn initialize_db(conn: &Connection) -> Result<()> {
             quantity INTEGER NOT NULL,
             price REAL NOT NULL,
             FOREIGN KEY(order_id) REFERENCES orders(id)
+        );
+        CREATE TABLE IF NOT EXISTS saved_carts (
+            email TEXT PRIMARY KEY,
+            cart_json TEXT NOT NULL,
+            updated_at TEXT NOT NULL
         );
     ")?;
     Ok(())
@@ -63,5 +75,31 @@ pub fn seed_products(conn: &Connection) -> Result<()> {
             rusqlite::params![name, desc, price, cat, sizes, colors, img, badge, 100],
         )?;
     }
+    Ok(())
+}
+
+/// Save cart to DB for a logged-in user
+pub fn save_cart(conn: &Connection, email: &str, cart_json: &str) -> Result<()> {
+    let now = chrono::Utc::now().to_rfc3339();
+    conn.execute(
+        "INSERT INTO saved_carts (email, cart_json, updated_at) VALUES (?1,?2,?3)
+         ON CONFLICT(email) DO UPDATE SET cart_json=excluded.cart_json, updated_at=excluded.updated_at",
+        rusqlite::params![email, cart_json, now],
+    )?;
+    Ok(())
+}
+
+/// Load saved cart from DB for a logged-in user
+pub fn load_cart(conn: &Connection, email: &str) -> Option<String> {
+    conn.query_row(
+        "SELECT cart_json FROM saved_carts WHERE email=?1",
+        [email],
+        |r| r.get(0),
+    ).ok()
+}
+
+/// Clear saved cart after order is placed
+pub fn clear_cart(conn: &Connection, email: &str) -> Result<()> {
+    conn.execute("DELETE FROM saved_carts WHERE email=?1", [email])?;
     Ok(())
 }

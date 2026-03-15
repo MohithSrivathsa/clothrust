@@ -4,14 +4,20 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use crate::AppState;
 
-const AUTH0_DOMAIN:        &str = "dev-y3p5ee28fvb47hvn.us.auth0.com";
-const AUTH0_CLIENT_ID:     &str = "oOGxXOHOUS6GqAWKacHbF2IT4tYVZeYS";
-const AUTH0_CLIENT_SECRET: &str = "hRbpr6JrA8O56HvW7146iFIMhzjZRoFb0JS7-mcNzZc_bZcRI8aih5EtSe5WB4kM";
-const REDIRECT_URI:        &str = "http://127.0.0.1:8080/callback";
+const AUTH0_DOMAIN:    &str = "dev-y3p5ee28fvb47hvn.us.auth0.com";
+const AUTH0_CLIENT_ID: &str = "oOGxXOHOUS6GqAWKacHbF2IT4tYVZeYS";
+const REDIRECT_URI:    &str = "http://127.0.0.1:8080/callback";
+
+fn auth0_secret() -> String {
+    std::env::var("AUTH0_CLIENT_SECRET").unwrap_or_else(|_| {
+        log::warn!("AUTH0_CLIENT_SECRET not set");
+        String::new()
+    })
+}
 
 // ── Admin whitelist ───────────────────────────────────────────
 const ADMIN_EMAILS: &[&str] = &[
-    "mohithsrivathsa111@gmail.com",
+    "mohithsivathsa111@gamil.com",
 ];
 
 pub fn is_admin(user: &AuthUser) -> bool {
@@ -51,7 +57,7 @@ pub async fn login(session: Session) -> HttpResponse {
     HttpResponse::Found().insert_header(("Location", url)).finish()
 }
 
-pub async fn callback(query: web::Query<CallbackQuery>, session: Session) -> HttpResponse {
+pub async fn callback(data: web::Data<AppState>, query: web::Query<CallbackQuery>, session: Session) -> HttpResponse {
     log::info!("CALLBACK: code={} error={:?}", query.code.is_some(), query.error);
     if let Some(err) = &query.error {
         let desc = query.error_description.as_deref().unwrap_or("");
@@ -89,6 +95,29 @@ pub async fn callback(query: web::Query<CallbackQuery>, session: Session) -> Htt
     };
     log::info!("Login success: {:?} admin={}", user.email, is_admin(&user));
     session.insert("user", &user).ok();
+
+    // Restore cart from DB for this user
+    // (we don't have AppState here so we pass user_sub via session for cart restore on next request)
+    session.insert("pending_cart_restore", &user.sub).ok();
+
+    // Restore saved cart from DB
+    if let Some(email) = &user.email {
+        let db = data.db.lock().unwrap();
+        if let Some(cart_json) = crate::db::load_cart(&db, email) {
+            // Merge: existing session cart + saved DB cart
+            use crate::models::CartItem;
+            let mut session_items: Vec<CartItem> = session.get("cart").unwrap_or(None).unwrap_or_default();
+            let db_items: Vec<CartItem> = serde_json::from_str(&cart_json).unwrap_or_default();
+            // Add DB items that aren't already in session cart
+            for db_item in db_items {
+                if !session_items.iter().any(|i| i.product_id == db_item.product_id && i.size == db_item.size && i.color == db_item.color) {
+                    session_items.push(db_item);
+                }
+            }
+            session.insert("cart", &session_items).ok();
+            log::info!("Cart restored: {} items for {}", session_items.len(), email);
+        }
+    }
     let name = user.name.as_deref().unwrap_or("welcome").to_string();
     HttpResponse::Ok().content_type("text/html").body(format!(
         r#"<!DOCTYPE html><html><head><meta charset="UTF-8"/>
@@ -100,7 +129,21 @@ pub async fn callback(query: web::Query<CallbackQuery>, session: Session) -> Htt
     ))
 }
 
-pub async fn logout(session: Session) -> HttpResponse {
+pub async fn logout(data: web::Data<AppState>, session: Session) -> HttpResponse {
+    // Save cart to DB before clearing session
+    if let Some(user) = current_user(&session) {
+        if let Some(email) = &user.email {
+            use crate::models::CartItem;
+            let items: Vec<CartItem> = session.get("cart").unwrap_or(None).unwrap_or_default();
+            if !items.is_empty() {
+                if let Ok(cart_json) = serde_json::to_string(&items) {
+                    let db = data.db.lock().unwrap();
+                    crate::db::save_cart(&db, email, &cart_json).ok();
+                    log::info!("Cart saved: {} items for {}", items.len(), email);
+                }
+            }
+        }
+    }
     session.purge();
     let url = format!(
         "https://{}/v2/logout?client_id={}&returnTo={}",

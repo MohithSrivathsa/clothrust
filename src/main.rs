@@ -11,6 +11,7 @@ mod models;
 mod routes;
 mod handlers;
 mod auth;
+mod stripe;
 
 pub struct AppState {
     pub db: Mutex<Connection>,
@@ -84,6 +85,9 @@ async fn main() -> std::io::Result<()> {
             .route("/api/admin/stats",                    web::get().to(handlers::api::admin_stats))
             .route("/api/admin/stock/{id}",               web::post().to(handlers::api::update_stock))
             .route("/api/admin/orders/{id}/status",       web::post().to(handlers::api::update_order_status))
+            // Stripe API
+            .route("/api/stripe/config",                  web::get().to(stripe::stripe_config))
+            .route("/api/stripe/create-payment-intent",   web::post().to(stripe::create_payment_intent))
     })
     .bind("127.0.0.1:8080")?
     .run()

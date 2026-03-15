@@ -70,6 +70,7 @@ pub struct OrderRequest {
     pub state: String,
     pub pincode: String,
     pub payment_method: String,
+    pub stripe_payment_id: Option<String>,
     pub items: Vec<CartItem>,
     pub total: f64,
 }
