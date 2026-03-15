@@ -67,7 +67,7 @@ async fn main() -> std::io::Result<()> {
             .route("/cart",          web::get().to(handlers::pages::cart))
             .route("/checkout",      web::get().to(handlers::pages::checkout))
             .route("/order-success", web::get().to(handlers::pages::order_success))
-            .route("/admin",         web::get().to(handlers::pages::admin))
+            .route("/admin",         web::get().to(auth::admin_guard))
             .route("/search",        web::get().to(handlers::pages::search))
             // Cart API
             .route("/api/cart",            web::get().to(handlers::api::get_cart))

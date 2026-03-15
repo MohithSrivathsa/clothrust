@@ -97,7 +97,10 @@
         </div>
 
         <div class="profile-actions">
-          <a href="/shop" class="btn btn-primary btn-full">Browse Collection</a>
+          {% if is_admin %}
+          <a href="/admin" class="btn btn-primary btn-full">🛠 Admin Panel</a>
+          {% endif %}
+          <a href="/shop" class="btn btn-ghost btn-full">Browse Collection</a>
           <a href="/cart" class="btn btn-ghost btn-full">View Cart</a>
           <a href="/logout" class="btn btn-ghost btn-full profile-logout-btn">Sign Out</a>
         </div>
