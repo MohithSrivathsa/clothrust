@@ -691,3 +691,179 @@ main{padding-top:var(--nav-h);min-height:100vh}
   .cart-item{grid-template-columns:70px 1fr;gap:0.85rem}
   .cart-item-qty,.cart-item-total{display:none}
 }
+
+/* ============================================================
+   AUTH — Nav additions
+   ============================================================ */
+.nav-user-btn {
+  width: 38px; height: 38px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--ink2); transition: all var(--transition);
+  overflow: hidden; border: 1.5px solid var(--border2);
+}
+.nav-user-btn:hover { border-color: var(--accent); color: var(--accent); }
+.nav-avatar {
+  width: 100%; height: 100%; object-fit: cover; border-radius: 50%;
+}
+.nav-login-btn { white-space: nowrap; }
+
+/* ============================================================
+   PROFILE PAGE
+   ============================================================ */
+.profile-page { min-height: calc(100vh - var(--nav-h)); }
+
+.profile-hero {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 3.5rem 0 3rem;
+}
+.profile-hero-inner {
+  max-width: 1100px; margin: 0 auto; padding: 0 2.5rem;
+  display: flex; align-items: center; gap: 2rem;
+}
+.profile-avatar-wrap { flex-shrink: 0; }
+.profile-avatar {
+  width: 80px; height: 80px; border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--surface);
+  box-shadow: var(--shadow);
+}
+.profile-avatar-placeholder {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: var(--accent-lt); border: 3px solid var(--surface);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 2rem;
+  color: var(--accent); font-weight: 500;
+  box-shadow: var(--shadow);
+}
+.profile-hero-text { flex: 1; }
+.profile-greeting {
+  font-family: var(--font-mono); font-size: 0.68rem;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 0.3rem;
+}
+.profile-name {
+  font-family: var(--font-display); font-size: 2.4rem;
+  font-weight: 300; line-height: 1.1; margin-bottom: 0.3rem;
+}
+.profile-email { font-size: 0.85rem; color: var(--ink3); }
+.profile-logout { flex-shrink: 0; }
+
+/* Profile body */
+.profile-body {
+  max-width: 1100px; margin: 0 auto;
+  padding: 3rem 2.5rem 5rem;
+}
+
+/* Stats */
+.profile-stats {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 0; border: 1px solid var(--border);
+  border-radius: var(--radius-lg); overflow: hidden;
+  margin-bottom: 3rem;
+}
+.pstat {
+  padding: 1.75rem 2rem; text-align: center;
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+}
+.pstat:last-child { border-right: none; }
+.pstat-val {
+  display: block;
+  font-family: var(--font-display); font-size: 2rem;
+  font-weight: 400; color: var(--ink); margin-bottom: 0.25rem;
+}
+.pstat-label {
+  font-family: var(--font-mono); font-size: 0.65rem;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink3);
+}
+
+/* Grid */
+.profile-grid {
+  display: grid; grid-template-columns: 1fr 340px;
+  gap: 2.5rem; align-items: start;
+}
+
+/* Sections */
+.profile-section {
+  background: var(--surface); border-radius: var(--radius-lg);
+  border: 1px solid var(--border); overflow: hidden;
+}
+.psec-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.5rem 1.75rem; border-bottom: 1px solid var(--border);
+}
+.psec-header h2 {
+  font-family: var(--font-display); font-size: 1.2rem; font-weight: 400;
+}
+
+/* Empty state */
+.profile-empty {
+  text-align: center; padding: 3.5rem 2rem;
+  color: var(--ink3);
+}
+.profile-empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+.profile-empty p { font-size: 0.875rem; }
+
+/* Orders list */
+.orders-list { padding: 0.5rem 0; }
+.order-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 1.75rem; border-bottom: 1px solid var(--border);
+  transition: background var(--transition);
+}
+.order-row:last-child { border-bottom: none; }
+.order-row:hover { background: var(--bg); }
+.order-row-left { display: flex; align-items: center; gap: 1rem; }
+.order-row-icon {
+  width: 40px; height: 40px; border-radius: var(--radius);
+  background: var(--bg2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; flex-shrink: 0;
+}
+.order-id {
+  font-family: var(--font-mono); font-size: 0.78rem;
+  color: var(--accent); margin-bottom: 0.15rem;
+}
+.order-meta { font-size: 0.72rem; color: var(--ink3); text-transform: capitalize; }
+.order-row-right { display: flex; flex-direction: column; align-items: flex-end; gap: 0.3rem; }
+.order-amount {
+  font-family: var(--font-display); font-size: 1.05rem; color: var(--ink);
+}
+.order-status {
+  font-family: var(--font-mono); font-size: 0.6rem;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 0.2rem 0.6rem; border-radius: 20px;
+}
+.order-status-confirmed { background: rgba(45,122,79,0.1); color: var(--success); }
+.order-status-shipped   { background: rgba(33,150,243,0.1); color: #1976d2; }
+.order-status-pending   { background: rgba(200,80,42,0.1);  color: var(--accent); }
+
+/* Account details */
+.account-details { padding: 0.5rem 1.75rem 1.5rem; }
+.account-field {
+  display: flex; flex-direction: column; gap: 0.2rem;
+  padding: 0.9rem 0; border-bottom: 1px solid var(--border);
+}
+.account-field:last-child { border-bottom: none; }
+.account-field-label {
+  font-family: var(--font-mono); font-size: 0.62rem;
+  letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink3);
+}
+.account-field-value { font-size: 0.9rem; color: var(--ink); }
+.account-sub { font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink3); }
+
+.profile-actions {
+  padding: 1.25rem 1.75rem 1.75rem;
+  display: flex; flex-direction: column; gap: 0.6rem;
+  border-top: 1px solid var(--border);
+}
+.profile-logout-btn { color: var(--accent) !important; border-color: rgba(200,80,42,0.3) !important; }
+.profile-logout-btn:hover { background: var(--accent-lt) !important; border-color: var(--accent) !important; }
+
+@media (max-width: 768px) {
+  .profile-hero-inner { flex-wrap: wrap; }
+  .profile-logout { order: 3; width: 100%; text-align: center; }
+  .profile-grid { grid-template-columns: 1fr; }
+  .profile-stats { grid-template-columns: 1fr 1fr 1fr; }
+}

@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}My Account — ThreadCraft{% endblock %}
+{% block content %}
+
+<div class="profile-page">
+
+  <div class="profile-hero">
+    <div class="profile-hero-inner">
+      <div class="profile-avatar-wrap">
+        {% if user.picture %}
+        <img src="{{ user.picture }}" alt="Profile" class="profile-avatar"/>
+        {% else %}
+        <div class="profile-avatar-placeholder">M</div>
+        {% endif %}
+      </div>
+      <div class="profile-hero-text">
+        <p class="profile-greeting">Welcome back</p>
+        <h1 class="profile-name">
+          {% if user.name %}{{ user.name }}{% else %}Member{% endif %}
+        </h1>
+        <p class="profile-email">{% if user.email %}{{ user.email }}{% endif %}</p>
+      </div>
+      <a href="/logout" class="btn btn-ghost btn-sm profile-logout">Sign Out</a>
+    </div>
+  </div>
+
+  <div class="profile-body">
+
+    <div class="profile-stats">
+      <div class="pstat">
+        <span class="pstat-val">{{ orders | length }}</span>
+        <span class="pstat-label">Orders</span>
+      </div>
+      <div class="pstat">
+        <span class="pstat-val">Member</span>
+        <span class="pstat-label">Status</span>
+      </div>
+      <div class="pstat">
+        <span class="pstat-val">Active</span>
+        <span class="pstat-label">Account</span>
+      </div>
+    </div>
+
+    <div class="profile-grid">
+
+      <section class="profile-section">
+        <div class="psec-header">
+          <h2>Order History</h2>
+          <a href="/shop" class="btn btn-outline btn-sm">Shop More</a>
+        </div>
+
+        {% if orders | length == 0 %}
+        <div class="profile-empty">
+          <div class="profile-empty-icon">&#128717;</div>
+          <p>No orders yet.</p>
+          <a href="/shop" class="btn btn-primary btn-sm" style="margin-top:1rem">Start Shopping</a>
+        </div>
+        {% else %}
+        <div class="orders-list">
+          {% for order in orders %}
+          <div class="order-row">
+            <div class="order-row-left">
+              <div class="order-row-icon">&#128230;</div>
+              <div>
+                <div class="order-id">#{{ order.id }}</div>
+                <div class="order-meta">{{ order.created_at }} &middot; {{ order.payment_method }}</div>
+              </div>
+            </div>
+            <div class="order-row-right">
+              <span class="order-amount">&#8377;{{ order.total | int }}</span>
+              <span class="order-status order-status-{{ order.status }}">{{ order.status }}</span>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </section>
+
+      <section class="profile-section">
+        <div class="psec-header">
+          <h2>Account Details</h2>
+        </div>
+
+        <div class="account-details">
+          <div class="account-field">
+            <span class="account-field-label">Full Name</span>
+            <span class="account-field-value">{% if user.name %}{{ user.name }}{% else %}&mdash;{% endif %}</span>
+          </div>
+          <div class="account-field">
+            <span class="account-field-label">Email</span>
+            <span class="account-field-value">{% if user.email %}{{ user.email }}{% else %}&mdash;{% endif %}</span>
+          </div>
+          <div class="account-field">
+            <span class="account-field-label">Username</span>
+            <span class="account-field-value">{% if user.nickname %}{{ user.nickname }}{% else %}&mdash;{% endif %}</span>
+          </div>
+        </div>
+
+        <div class="profile-actions">
+          <a href="/shop" class="btn btn-primary btn-full">Browse Collection</a>
+          <a href="/cart" class="btn btn-ghost btn-full">View Cart</a>
+          <a href="/logout" class="btn btn-ghost btn-full profile-logout-btn">Sign Out</a>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}
