@@ -1,15 +1,20 @@
 #!/usr/bin/env bash
-set -a
-[ -f .env ] && source .env
-set +a
+set -e
 
-echo ""
 echo "  ThreadCraft Store"
 echo ""
 
 if ! command -v cargo &> /dev/null; then
-  echo "❌ Rust not installed. Run: curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
+  echo "❌ Rust not installed."
   exit 1
+fi
+
+# Load environment variables from .env
+if [ -f .env ]; then
+  set -a
+  source .env
+  set +a
+  echo "✅  Environment loaded from .env"
 fi
 
 echo "✅  Rust found: $(rustc --version)"
