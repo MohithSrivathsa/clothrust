@@ -4,14 +4,14 @@
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-bg"></div>
   <div class="hero-content">
+    <div class="hero-bg"></div>
     <p class="hero-eyebrow">New Collection 2024</p>
-    <h1 class="hero-title">Art You<br/><em>Wear</em></h1>
+    <h1 class="hero-title">ART<br/>YOU<br/><em>WEAR</em></h1>
     <p class="hero-sub">Premium custom-printed apparel where every thread tells a story. Hand-crafted designs on quality fabrics.</p>
     <div class="hero-ctas">
-      <a href="/shop" class="btn btn-primary">Shop Collection</a>
-      <a href="/shop?category=T-Shirts" class="btn btn-ghost">View T-Shirts</a>
+      <a href="/shop" class="btn btn-primary btn-large">Shop Now</a>
+      <a href="/shop?category=T-Shirts" class="btn btn-ghost btn-large">View T-Shirts</a>
     </div>
     <div class="hero-stats">
       <div><strong>500+</strong><span>Designs</span></div>
@@ -74,19 +74,7 @@
       <div class="product-badge">{{ product.badge }}</div>
       {% endif %}
       <a href="/product/{{ product.id }}" class="product-image-wrap">
-        <div class="product-image-placeholder">
-          <svg viewBox="0 0 200 220" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <linearGradient id="grad{{ product.id }}" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" style="stop-color:#f0ece4"/>
-                <stop offset="100%" style="stop-color:#ddd5c8"/>
-              </linearGradient>
-            </defs>
-            <path d="M50,20 L20,55 L47,65 L40,200 L160,200 L153,65 L180,55 L150,20 C140,37 132,43 100,43 C68,43 60,37 50,20Z" fill="url(#grad{{ product.id }})" stroke="#c8502a" stroke-width="0.8"/>
-            <text x="100" y="120" text-anchor="middle" fill="#c8502a" font-family="Space Mono" font-size="22" opacity="0.5">TC</text>
-            <circle cx="100" cy="110" r="25" fill="none" stroke="#c8502a" stroke-width="0.8" opacity="0.4"/>
-          </svg>
-        </div>
+        <div class="product-image-placeholder"><img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy"/></div>
         <div class="product-overlay">
           <span>Quick View</span>
         </div>

@@ -14,6 +14,39 @@ window.addEventListener('scroll', () => {
   }
 });
 
+// ---- Active nav link — highlight based on current URL ----
+(function() {
+  const path = window.location.pathname;
+  const search = window.location.search;
+  document.querySelectorAll('.nav-links a, .nav-mobile a').forEach(a => {
+    a.classList.remove('active');
+    const href = a.getAttribute('href');
+    if (!href) return;
+    // Exact match or starts with (for /shop?category=...)
+    if (href === path || (href !== '/' && path.startsWith(href) && href.length > 1)) {
+      a.classList.add('active');
+    }
+    // Handle category links e.g. /shop?category=T-Shirts
+    if (href.includes('?') && (path + search) === href) {
+      a.classList.add('active');
+    }
+    if (href === '/shop' && path === '/shop' && !search) {
+      a.classList.add('active');
+    }
+  });
+})();
+
+// ---- Close search when clicking outside ----
+document.addEventListener('click', (e) => {
+  const bar = document.getElementById('nav-search-bar');
+  const btn = document.querySelector('.nav-search-btn');
+  if (bar && bar.classList.contains('open')) {
+    if (!bar.contains(e.target) && e.target !== btn && !btn?.contains(e.target)) {
+      bar.classList.remove('open');
+    }
+  }
+});
+
 // ---- Mobile menu ----
 function toggleMenu() {
   const menu = document.getElementById('nav-mobile');

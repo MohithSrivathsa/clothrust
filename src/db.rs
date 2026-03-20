@@ -46,15 +46,124 @@ pub fn seed_products(conn: &Connection) -> Result<()> {
     let count: i64 = conn.query_row("SELECT COUNT(*) FROM products", [], |r| r.get(0))?;
     if count > 0 { return Ok(()); }
 
-    let products = vec![
-        ("Geometric Sunrise Tee","Hand-printed geometric sunrise design using eco-friendly inks.",799.0,"T-Shirts",r#"["XS","S","M","L","XL","XXL"]"#,r#"["White","Black","Sand","Sky Blue"]"#,"/static/images/tee1.svg",Some("Best Seller")),
-        ("Abstract Waves Oversized Tee","Oversized fit with fluid abstract wave print. Premium 240gsm cotton.",999.0,"T-Shirts",r#"["S","M","L","XL","XXL"]"#,r#"["Off White","Charcoal","Sage Green"]"#,"/static/images/tee2.svg",Some("New")),
-        ("Mandala Spirit Shirt","Intricate mandala print with deep symbolic meaning.",1199.0,"Shirts",r#"["XS","S","M","L","XL"]"#,r#"["White","Navy","Burgundy"]"#,"/static/images/shirt1.svg",None),
-        ("Urban Sketch Hoodie","Architectural sketch print on premium fleece hoodie.",1899.0,"Hoodies",r#"["S","M","L","XL","XXL"]"#,r#"["Grey Melange","Black","Cream"]"#,"/static/images/hoodie1.svg",Some("Limited")),
-        ("Botanical Print Tee","Delicate botanical illustration print. Soft-washed vintage feel.",849.0,"T-Shirts",r#"["XS","S","M","L","XL"]"#,r#"["White","Peach","Mint"]"#,"/static/images/tee3.svg",None),
-        ("Typography Drop Shoulder","Bold typographic art print on drop-shoulder silhouette.",1099.0,"T-Shirts",r#"["S","M","L","XL","XXL"]"#,r#"["Black","White","Olive"]"#,"/static/images/tee4.svg",Some("Trending")),
-        ("Celestial Map Shirt","Detailed celestial map print on lightweight poplin.",1349.0,"Shirts",r#"["XS","S","M","L","XL"]"#,r#"["Navy","Black","Stone"]"#,"/static/images/shirt2.svg",None),
-        ("Vintage Varsity Hoodie","Retro varsity-inspired graphic on heavyweight hoodie.",2199.0,"Hoodies",r#"["S","M","L","XL","XXL"]"#,r#"["Maroon","Forest Green","Navy"]"#,"/static/images/hoodie2.svg",Some("Premium")),
+    let products: Vec<(&str,&str,f64,&str,&str,&str,&str,Option<&str>)> = vec![
+        (
+            "Hanuman — The Devoted Warrior",
+            "Hand-printed Hanuman artwork on premium 220gsm cotton. A symbol of strength, devotion and fearlessness. Eco-friendly water-based inks.",
+            999.0, "T-Shirts",
+            r#"["XS","S","M","L","XL","XXL"]"#,
+            r#"["White","Sand","Cream"]"#,
+            "/static/images/hanuman.webp",
+            Some("Best Seller")
+        ),
+        (
+            "Durga — The Invincible",
+            "Goddess Durga in fierce warrior form. Bold HD print on 240gsm oversized tee. Power and grace in every thread.",
+            1099.0, "T-Shirts",
+            r#"["XS","S","M","L","XL","XXL"]"#,
+            r#"["White","Off White","Light Grey"]"#,
+            "/static/images/durga.webp",
+            Some("New")
+        ),
+        (
+            "Kali — Dark Mother",
+            "The fierce and transformative Goddess Kali. Striking print that commands attention. Premium drop-shoulder fit.",
+            1099.0, "T-Shirts",
+            r#"["S","M","L","XL","XXL"]"#,
+            r#"["White","Cream","Stone"]"#,
+            "/static/images/kali.webp",
+            None
+        ),
+        (
+            "Arjuna & Krishna — Kurukshetra",
+            "The legendary moment on the battlefield of Kurukshetra. Epic print on breathable cotton poplin shirt.",
+            1349.0, "Shirts",
+            r#"["XS","S","M","L","XL"]"#,
+            r#"["White","Light Blue","Sand"]"#,
+            "/static/images/arjuna-krishna.webp",
+            Some("Limited")
+        ),
+        (
+            "Poseidon — Lord of the Seas",
+            "Greek god of the ocean in full fury. Heavyweight 260gsm hoodie with chest print. Built for legends.",
+            1899.0, "Hoodies",
+            r#"["S","M","L","XL","XXL"]"#,
+            r#"["White","Grey Melange","Stone Blue"]"#,
+            "/static/images/poseidon.webp",
+            None
+        ),
+        (
+            "Athena — Goddess of Wisdom",
+            "Athena in battle armour — wisdom meets power. Precision printed on structured cotton shirt.",
+            1249.0, "Shirts",
+            r#"["XS","S","M","L","XL"]"#,
+            r#"["White","Ivory","Light Grey"]"#,
+            "/static/images/athena.webp",
+            Some("Trending")
+        ),
+        (
+            "Hades — King of the Underworld",
+            "The dark and brooding ruler of the underworld. Oversized tee with dramatic artwork. Not for the faint-hearted.",
+            999.0, "T-Shirts",
+            r#"["S","M","L","XL","XXL"]"#,
+            r#"["White","Off White","Cream"]"#,
+            "/static/images/hades.webp",
+            None
+        ),
+        (
+            "Anubis — Guardian of the Dead",
+            "Egyptian god Anubis in ceremonial stance. Ancient meets contemporary on premium fleece hoodie.",
+            1999.0, "Hoodies",
+            r#"["S","M","L","XL","XXL"]"#,
+            r#"["White","Cream","Sand"]"#,
+            "/static/images/anubis.webp",
+            Some("Premium")
+        ),
+        (
+            "Quetzalcoatl — The Feathered Serpent",
+            "Aztec deity Quetzalcoatl in magnificent form. Vibrant HD print on 220gsm relaxed fit tee.",
+            1099.0, "T-Shirts",
+            r#"["XS","S","M","L","XL","XXL"]"#,
+            r#"["White","Off White","Light Yellow"]"#,
+            "/static/images/quetzalcoatl.webp",
+            None
+        ),
+        (
+            "Quetzalcoatl II — Serpent God",
+            "Second variant of the Aztec feathered serpent — different composition, same raw power.",
+            1099.0, "T-Shirts",
+            r#"["S","M","L","XL","XXL"]"#,
+            r#"["White","Cream","Stone"]"#,
+            "/static/images/quetzalcoatl-2.webp",
+            None
+        ),
+        (
+            "Nezha — Lotus Prince",
+            "Chinese mythological hero Nezha in dynamic action pose. Oversized streetwear tee with bold front print.",
+            1149.0, "T-Shirts",
+            r#"["XS","S","M","L","XL","XXL"]"#,
+            r#"["White","Ivory","Light Pink"]"#,
+            "/static/images/nezha.webp",
+            Some("New")
+        ),
+        (
+            "Susanoo — The Storm God",
+            "Japanese god of storms Susanoo in legendary battle. Heavyweight premium hoodie for those who carry thunder.",
+            1999.0, "Hoodies",
+            r#"["S","M","L","XL","XXL"]"#,
+            r#"["White","Grey Melange","Cream"]"#,
+            "/static/images/susanoo.webp",
+            Some("Limited")
+        ),
+        (
+            "Thor — God of Thunder",
+            "The Norse thunder god in full might. Classic fit shirt with intricate hand-finished print detail.",
+            1249.0, "Shirts",
+            r#"["XS","S","M","L","XL"]"#,
+            r#"["White","Light Grey","Stone"]"#,
+            "/static/images/thor.webp",
+            Some("Trending")
+        ),
     ];
 
     for (name, desc, price, cat, sizes, colors, img, badge) in products {
