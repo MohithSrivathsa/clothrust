@@ -350,3 +350,136 @@ document.addEventListener('DOMContentLoaded', () => {
 
   updateWishlistBtns();
 });
+
+// ============================================================
+// HERO SLIDESHOW — Stack Slide (vertical flip)
+// ============================================================
+(function() {
+  const names = [
+    "Hanuman — The Devoted Warrior",
+    "Durga — The Invincible",
+    "Kali — Dark Mother",
+    "Arjuna & Krishna — Kurukshetra",
+    "Poseidon — Lord of the Seas",
+    "Athena — Goddess of Wisdom",
+    "Hades — King of the Underworld",
+    "Anubis — Guardian of the Dead",
+    "Quetzalcoatl — The Feathered Serpent",
+    "Nezha — Lotus Prince",
+    "Susanoo — The Storm God",
+    "Thor — God of Thunder",
+    "Quetzalcoatl II — Serpent God"
+  ];
+
+  const container = document.getElementById('heroSlideshow');
+  if (!container) return;
+
+  const slides = Array.from(container.querySelectorAll('.slide'));
+  const dotsEl = document.getElementById('slideshowDots');
+  const labelEl = document.getElementById('slideshowLabel');
+  let current = 0;
+  let timer = null;
+  let isAnimating = false;
+
+  // Build dots
+  slides.forEach((_, i) => {
+    const d = document.createElement('button');
+    d.className = 'sdot' + (i === 0 ? ' active' : '');
+    d.setAttribute('aria-label', 'Slide ' + (i+1));
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  });
+
+  // Build nav arrows
+  const nav = document.createElement('div');
+  nav.className = 'slideshow-nav';
+  nav.innerHTML = '<button class="snav-btn" id="snav-prev">&#8593;</button><button class="snav-btn" id="snav-next">&#8595;</button>';
+  container.appendChild(nav);
+  document.getElementById('snav-prev').onclick = () => goTo((current - 1 + slides.length) % slides.length);
+  document.getElementById('snav-next').onclick = () => goTo((current + 1) % slides.length);
+
+  function updateDots(idx) {
+    dotsEl.querySelectorAll('.sdot').forEach((d, i) => {
+      d.classList.toggle('active', i === idx);
+    });
+  }
+
+  function updateLabel(idx) {
+    if (!labelEl) return;
+    labelEl.style.opacity = '0';
+    labelEl.style.transform = 'translateY(8px)';
+    labelEl.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+    setTimeout(() => {
+      labelEl.textContent = names[idx] || '';
+      labelEl.style.opacity = '1';
+      labelEl.style.transform = 'translateY(0)';
+    }, 300);
+  }
+
+  function goTo(next) {
+    if (isAnimating || next === current) return;
+    isAnimating = true;
+
+    const curr = slides[current];
+    const nextSlide = slides[next];
+
+    // Position next slide below (or above if going backwards)
+    const goingDown = next > current || (current === slides.length - 1 && next === 0);
+
+    nextSlide.style.transition = 'none';
+    nextSlide.style.transform = goingDown ? 'translateY(110%)' : 'translateY(-110%)';
+    nextSlide.style.zIndex = '1';
+
+    // Force reflow
+    nextSlide.getBoundingClientRect();
+
+    // Animate current out
+    curr.style.transition = 'transform 0.65s cubic-bezier(0.76,0,0.24,1)';
+    curr.style.transform = goingDown ? 'translateY(-110%)' : 'translateY(110%)';
+    curr.style.zIndex = '3';
+
+    // Animate next in
+    nextSlide.style.transition = 'transform 0.65s cubic-bezier(0.76,0,0.24,1)';
+    nextSlide.style.transform = 'translateY(0)';
+    nextSlide.style.zIndex = '2';
+
+    updateDots(next);
+    updateLabel(next);
+
+    setTimeout(() => {
+      curr.style.transition = 'none';
+      curr.style.transform = 'translateY(100%)';
+      curr.style.zIndex = '1';
+      current = next;
+      isAnimating = false;
+    }, 680);
+  }
+
+  function startTimer() {
+    timer = setInterval(() => {
+      goTo((current + 1) % slides.length);
+    }, 3500);
+  }
+
+  function stopTimer() { clearInterval(timer); }
+
+  // Pause on hover
+  container.addEventListener('mouseenter', stopTimer);
+  container.addEventListener('mouseleave', startTimer);
+
+  // Touch swipe support
+  let touchStartY = 0;
+  container.addEventListener('touchstart', e => { touchStartY = e.touches[0].clientY; }, {passive:true});
+  container.addEventListener('touchend', e => {
+    const diff = touchStartY - e.changedTouches[0].clientY;
+    if (Math.abs(diff) > 40) goTo(diff > 0 ? (current+1) % slides.length : (current-1+slides.length) % slides.length);
+  }, {passive:true});
+
+  // Set initial label style
+  if (labelEl) {
+    labelEl.style.opacity = '1';
+    labelEl.style.transform = 'translateY(0)';
+  }
+
+  startTimer();
+})();

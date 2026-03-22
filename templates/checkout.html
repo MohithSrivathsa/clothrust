@@ -115,11 +115,9 @@
       <div id="checkout-items">
         {% for item in cart.items %}
         <div class="checkout-item">
-          <div class="ci-image">
-            <svg viewBox="0 0 60 68" xmlns="http://www.w3.org/2000/svg">
-              <path d="M15,6 L6,17 L14,20 L12,60 L48,60 L46,20 L54,17 L45,6 C42,11 40,13 30,13 C20,13 18,11 15,6Z" fill="#ede8df" stroke="#c8502a" stroke-width="0.7"/>
-            </svg>
-          </div>
+          <div class="ci-image" style="background:#f8f8f8;">
+              <img src="{{ item.image_url }}" alt="{{ item.product_name }}" style="width:100%;height:100%;object-fit:cover;object-position:top center;border-radius:4px;" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=&quot;font-size:1.2rem;text-align:center&quot;>👕</div>'"/>
+            </div>
           <div class="ci-details">
             <strong>{{ item.product_name }}</strong>
             <span>{{ item.size }} · {{ item.color }} × {{ item.quantity }}</span>

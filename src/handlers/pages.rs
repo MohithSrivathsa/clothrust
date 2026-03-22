@@ -6,7 +6,12 @@ use crate::models::CartItem;
 use crate::auth::current_user;
 
 fn base_ctx(session: &Session) -> Context {
-    let items: Vec<CartItem> = session.get::<Vec<CartItem>>("cart").unwrap_or(None).unwrap_or_default();
+    let mut items: Vec<CartItem> = session.get::<Vec<CartItem>>("cart").unwrap_or(None).unwrap_or_default();
+    // Clear cart if it contains old SVG placeholder URLs
+    if items.iter().any(|i| i.image_url.contains(".svg") || i.image_url.is_empty()) {
+        items.clear();
+        session.insert("cart", &items).ok();
+    }
     let mut ctx = Context::new();
     ctx.insert("cart_count", &items.len());
     if let Some(user) = current_user(session) {
