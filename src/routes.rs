@@ -1,2 +1,1 @@
-// Re-export handlers
-pub use crate::handlers::*;
+// routes are registered directly in main.rs

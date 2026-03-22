@@ -120,6 +120,7 @@ pub async fn order_success(data: web::Data<AppState>, session: Session, query: w
     HttpResponse::Ok().content_type("text/html").body(html)
 }
 
+#[allow(dead_code)]
 pub async fn admin(data: web::Data<AppState>, _session: Session) -> HttpResponse {
     let html = data.tera.render("admin.html", &Context::new()).unwrap_or_else(|e| format!("Error: {}", e));
     HttpResponse::Ok().content_type("text/html").body(html)

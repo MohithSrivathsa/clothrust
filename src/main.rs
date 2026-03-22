@@ -1,3 +1,4 @@
+#![allow(unused_imports, dead_code)]
 use actix_web::{web, App, HttpServer, middleware};
 use actix_files::Files;
 use actix_session::{SessionMiddleware, storage::CookieSessionStore};

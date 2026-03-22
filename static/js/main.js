@@ -67,6 +67,10 @@ function showToast(msg, type = 'success') {
 }
 
 // ---- Quick Add Modal ----
+function quickAdd(id, name, price, img) {
+  showQuickAddModal(id, name, price, img);
+}
+
 function showQuickAddModal(id, name, price, img) {
   // Remove existing
   const existing = document.getElementById('quick-add-modal');
@@ -87,39 +91,47 @@ function showQuickAddModal(id, name, price, img) {
         padding: 1rem;
       `;
       modal.innerHTML = `
-        <div style="background:#14141f; border:1px solid rgba(233,69,96,0.3); border-radius:16px; padding:2rem; max-width:480px; width:100%; position:relative;">
-          <button onclick="document.getElementById('quick-add-modal').remove()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;color:#a0a0b0;font-size:1.4rem;cursor:pointer;">✕</button>
-          <h3 style="font-family:'Playfair Display',serif;font-size:1.4rem;margin-bottom:0.25rem;">${name}</h3>
-          <div style="font-family:'Space Mono',monospace;color:#e94560;font-size:1.2rem;margin-bottom:1.5rem;">₹${Math.round(price)}</div>
-          
-          <div style="margin-bottom:1.25rem;">
-            <div style="font-family:'Space Mono',monospace;font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:#a0a0b0;margin-bottom:0.75rem;">Select Size</div>
-            <div id="modal-sizes" style="display:flex;flex-wrap:wrap;gap:0.5rem;">
-              ${(p.sizes || []).map(s => `
-                <button onclick="modalSelectSize('${s}')" data-size="${s}"
-                  style="min-width:44px;height:44px;padding:0 0.75rem;border-radius:8px;border:1px solid rgba(233,69,96,0.2);background:#1a1a2e;color:#f0f0f0;font-family:'Space Mono',monospace;font-size:0.8rem;cursor:pointer;transition:all 0.2s;">
-                  ${s}
-                </button>
-              `).join('')}
+        <div style="background:#fff;border:3px solid #0a0a0a;border-radius:16px;padding:0;max-width:520px;width:100%;position:relative;overflow:hidden;box-shadow:8px 8px 0 #0a0a0a;">
+          <div style="display:flex;gap:0;max-height:85vh;">
+            <div style="width:180px;flex-shrink:0;background:#f8f8f8;border-right:3px solid #0a0a0a;overflow:hidden;">
+              <img src="${img}" alt="${name}" style="width:100%;height:100%;object-fit:cover;object-position:top center;"/>
             </div>
-          </div>
-          
-          <div style="margin-bottom:1.75rem;">
-            <div style="font-family:'Space Mono',monospace;font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:#a0a0b0;margin-bottom:0.75rem;">Select Color</div>
-            <div id="modal-colors" style="display:flex;flex-wrap:wrap;gap:0.5rem;">
-              ${(p.colors || []).map((c, i) => `
-                <button onclick="modalSelectColor('${c}')" data-color="${c}"
-                  style="padding:0.4rem 0.9rem;border-radius:6px;border:1px solid ${i===0?'#e94560':'rgba(233,69,96,0.2)'};background:${i===0?'rgba(233,69,96,0.15)':'#1a1a2e'};color:${i===0?'#e94560':'#a0a0b0'};font-size:0.8rem;cursor:pointer;transition:all 0.2s;">
-                  ${c}
-                </button>
-              `).join('')}
-            </div>
-          </div>
+            <div style="flex:1;padding:1.75rem;overflow-y:auto;">
+              <button onclick="document.getElementById('quick-add-modal').remove()" style="position:absolute;top:1rem;right:1rem;background:none;border:2px solid #0a0a0a;border-radius:6px;width:32px;height:32px;font-size:1rem;cursor:pointer;font-weight:900;display:flex;align-items:center;justify-content:center;">✕</button>
+              <p style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.18em;text-transform:uppercase;color:#888;margin-bottom:0.4rem;">Quick Add</p>
+              <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:0.04em;margin-bottom:0.25rem;line-height:1;color:#0a0a0a;">${name}</h3>
+              <div style="font-family:'Bebas Neue',sans-serif;color:#e63000;font-size:1.6rem;margin-bottom:1.5rem;letter-spacing:0.04em;">₹${Math.round(price)}</div>
+              
+              <div style="margin-bottom:1.25rem;">
+                <div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.18em;text-transform:uppercase;color:#888;margin-bottom:0.65rem;font-weight:700;">Select Size</div>
+                <div id="modal-sizes" style="display:flex;flex-wrap:wrap;gap:0.4rem;">
+                  ${(p.sizes || []).map(s => `
+                    <button onclick="modalSelectSize('${s}')" data-size="${s}"
+                      style="min-width:46px;height:46px;padding:0 0.75rem;border-radius:6px;border:2px solid #0a0a0a;background:#fff;color:#0a0a0a;font-family:'Inter',sans-serif;font-size:0.8rem;font-weight:800;cursor:pointer;transition:all 0.2s;">
+                      ${s}
+                    </button>
+                  `).join('')}
+                </div>
+              </div>
+              
+              <div style="margin-bottom:1.75rem;">
+                <div style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;letter-spacing:0.18em;text-transform:uppercase;color:#888;margin-bottom:0.65rem;font-weight:700;">Select Color</div>
+                <div id="modal-colors" style="display:flex;flex-wrap:wrap;gap:0.4rem;">
+                  ${(p.colors || []).map((clr, i) => `
+                    <button onclick="modalSelectColor('${clr}')" data-color="${clr}"
+                      style="padding:0.45rem 1rem;border-radius:6px;border:2px solid ${i===0?'#e63000':'#d0d0d0'};background:${i===0?'#e63000':'#fff'};color:${i===0?'#fff':'#444'};font-size:0.78rem;font-weight:700;cursor:pointer;transition:all 0.2s;font-family:'Inter',sans-serif;">
+                      ${clr}
+                    </button>
+                  `).join('')}
+                </div>
+              </div>
 
-          <button onclick="modalAddToCart(${id}, '${name}')" style="width:100%;padding:1rem;background:#e94560;color:white;border:none;border-radius:12px;font-size:0.85rem;font-family:'DM Sans',sans-serif;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-weight:500;transition:all 0.2s;">
-            Add to Cart
-          </button>
-          <a href="/product/${id}" style="display:block;text-align:center;margin-top:0.75rem;font-size:0.8rem;color:#a0a0b0;text-decoration:underline;">View Full Details →</a>
+              <button onclick="modalAddToCart(${id}, '${name}')" style="width:100%;padding:1rem;background:#e63000;color:white;border:none;border-radius:6px;font-size:0.78rem;font-family:'Inter',sans-serif;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;font-weight:800;transition:all 0.2s;border:2px solid #e63000;">
+                ADD TO CART
+              </button>
+              <a href="/product/${id}" style="display:block;text-align:center;margin-top:0.75rem;font-size:0.78rem;color:#888;font-family:'JetBrains Mono',monospace;font-weight:500;">View Full Details →</a>
+            </div>
+          </div>
         </div>
       `;
       document.body.appendChild(modal);
@@ -136,9 +148,9 @@ function modalSelectSize(size) {
   window._modalSelectedSize = size;
   document.querySelectorAll('#modal-sizes button').forEach(b => {
     const isActive = b.dataset.size === size;
-    b.style.background = isActive ? '#e94560' : '#1a1a2e';
-    b.style.borderColor = isActive ? '#e94560' : 'rgba(233,69,96,0.2)';
-    b.style.color = isActive ? 'white' : '#f0f0f0';
+    b.style.background = isActive ? '#0a0a0a' : '#fff';
+    b.style.borderColor = '#0a0a0a';
+    b.style.color = isActive ? 'white' : '#0a0a0a';
   });
 }
 
@@ -146,9 +158,9 @@ function modalSelectColor(color) {
   window._modalSelectedColor = color;
   document.querySelectorAll('#modal-colors button').forEach(b => {
     const isActive = b.dataset.color === color;
-    b.style.background = isActive ? 'rgba(233,69,96,0.15)' : '#1a1a2e';
-    b.style.borderColor = isActive ? '#e94560' : 'rgba(233,69,96,0.2)';
-    b.style.color = isActive ? '#e94560' : '#a0a0b0';
+    b.style.background = isActive ? '#e63000' : '#fff';
+    b.style.borderColor = isActive ? '#e63000' : '#d0d0d0';
+    b.style.color = isActive ? 'white' : '#444';
   });
 }
 
